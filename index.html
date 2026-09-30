@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GenMeet — agendamento, comunicação e registro de reuniões</title>
+<link rel="stylesheet" href="assets/css/styles.css">
+</head>
+<body>
+<div id="supabase-status" title="Status da conexão com o Supabase"><span class="dot"></span><span class="status-text">Conectando...</span></div>
+
+<div id="storage-warn" class="storage-warn" style="display:none"></div>
+<div class="shell">
+  <aside class="rail">
+    <div class="brand">
+      <svg viewBox="0 0 48 48" aria-hidden="true">
+        <g fill="none" stroke="#8FE01B" stroke-width="3.2">
+          <ellipse cx="24" cy="24" rx="21" ry="9"/>
+          <ellipse cx="24" cy="24" rx="21" ry="9" transform="rotate(60 24 24)"/>
+          <ellipse cx="24" cy="24" rx="21" ry="9" transform="rotate(120 24 24)"/>
+        </g>
+        <circle cx="24" cy="5.8" r="4.4" fill="#1596A8"/>
+        <circle cx="8.4" cy="33" r="3.8" fill="#3350F0"/>
+        <circle cx="39.6" cy="33" r="3.8" fill="#B4F055"/>
+      </svg>
+      <span class="wordmark">Gen<span>Meet</span></span>
+    </div>
+
+    <nav class="nav" id="nav">
+      <button data-v="painel" class="on"><span class="ico">◈</span>Painel</button>
+      <button data-v="nova"><span class="ico">＋</span>Nova reunião</button>
+      <button data-v="reunioes"><span class="ico">≡</span>Reuniões</button>
+      <button data-v="agenda"><span class="ico">▦</span>Agenda</button>
+      <button data-v="equipes"><span class="ico">◇</span>Equipes</button>
+      <button data-v="especialistas"><span class="ico">👤</span>Especialistas</button>
+      <button data-v="juizes"><span class="ico">⚖️</span>Juízes</button>
+      <button data-v="participantes"><span class="ico">👥</span>Participantes</button>
+      <button data-v="conta"><span class="ico">🔑</span>Conta</button>
+      <button data-v="config"><span class="ico">⚙</span>Configurações</button>
+    </nav>
+
+    <div class="rail-foot">Avisos automáticos 1 h e 30 min antes de cada reunião.</div>
+  </aside>
+
+  <main class="main">
+    <div class="mobile-brand">
+      <svg viewBox="0 0 48 48" aria-hidden="true">
+        <g fill="none" stroke="#8FE01B" stroke-width="3.2">
+          <ellipse cx="24" cy="24" rx="21" ry="9"/>
+          <ellipse cx="24" cy="24" rx="21" ry="9" transform="rotate(60 24 24)"/>
+          <ellipse cx="24" cy="24" rx="21" ry="9" transform="rotate(120 24 24)"/>
+        </g>
+        <circle cx="24" cy="5.8" r="4.4" fill="#1596A8"/>
+        <circle cx="8.4" cy="33" r="3.8" fill="#3350F0"/>
+        <circle cx="39.6" cy="33" r="3.8" fill="#B4F055"/>
+      </svg>
+      <span class="wordmark">Gen<span>Meet</span></span>
+    </div>
+
+    <!-- PAINEL -->
+    <section class="view on" id="v-painel">
+      <div class="page-head">
+        <div><h1>Painel</h1><p>A próxima reunião e os avisos que o GenMeet vai disparar.</p></div>
+        <button class="btn green" data-go="nova">Agendar reunião</button>
+      </div>
+      <div id="alert-box"></div>
+      <div id="hero"></div>
+      <div class="stats" id="stats"></div>
+      <div class="section-head"><h3>Próximas reuniões</h3><button class="btn ghost small" data-go="reunioes">Ver todas</button></div>
+      <div id="upcoming" class="rows"></div>
+    </section>
+
+    <!-- NOVA REUNIÃO -->
+    <section class="view" id="v-nova">
+      <div class="page-head">
+        <div><h1 id="form-title">Nova reunião</h1>
+        <p>Cada reunião tem um destino único: pessoa ou equipe. Nunca os dois.</p></div>
+      </div>
+
+      <form class="form" id="form" novalidate>
+        <div class="field">
+          <label for="f-nome">Nome da reunião</label>
+          <input class="input" id="f-nome" maxlength="90" placeholder="Ex.: Alinhamento de rota do robô" autocomplete="off">
+          <div class="err-msg" id="e-nome">Dê um nome à reunião.</div>
+        </div>
+
+        <div class="grid2">
+          <div class="field">
+            <label for="f-data">Data</label>
+            <input class="input" id="f-data" type="date">
+            <div class="err-msg" id="e-data">Escolha uma data de hoje em diante.</div>
+          </div>
+          <div class="field">
+            <label for="f-hora">Hora</label>
+            <input class="input" id="f-hora" type="time">
+            <div class="err-msg" id="e-hora">Escolha a hora de início.</div>
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="f-criador">Quem criou a reunião?</label>
+          <select class="input" id="f-criador">
+            <option value="">Selecione quem criou a reunião</option>
+          </select>
+          <div class="err-msg" id="e-criador">Escolha quem criou a reunião.</div>
+        </div>
+
+        <div class="field">
+          <label>Destino da reunião</label>
+          <div class="dest">
+            <button type="button" class="dest-opt" data-k="pessoa">
+              <span class="lock">bloqueado</span>
+              <span class="t"><i>👤</i>Pessoa</span>
+              <span class="d">Reunião com uma pessoa</span>
+            </button>
+            <button type="button" class="dest-opt" data-k="equipe">
+              <span class="lock">bloqueado</span>
+              <span class="t"><i>👥</i>Equipe</span>
+              <span class="d">Reunião com uma equipe</span>
+            </button>
+          </div>
+          <p class="dest-note" id="dest-note">Escolha um dos dois. Ao selecionar, o outro fica bloqueado.</p>
+
+          <div class="dest-pick" id="pick-pes">
+            <span class="lbl">Tipo de pessoa</span>
+            <div class="tchips" id="tipo-chips"></div>
+            <div class="pgrid" id="people-pick"></div>
+          </div>
+          <div class="dest-pick" id="pick-eq">
+            <span class="lbl">Escolha a equipe</span>
+            <div class="pgrid" id="team-pick"></div>
+          </div>
+          <div class="err-msg" id="e-dest">Escolha o destino e selecione quem participa.</div>
+        </div>
+
+        <div class="field">
+          <label for="f-part">Participantes</label>
+          <div class="add-row">
+            <select class="input" id="f-part"></select>
+            <button type="button" class="btn ghost" id="add-part">Adicionar à reunião</button>
+            <button type="button" class="btn ghost" id="new-part-inline">+ Cadastrar participante</button>
+          </div>
+          <div class="chips" id="chips"></div>
+          <p class="hint">Os participantes vêm do cadastro e aparecem no aviso de lembrete.</p>
+          <div class="err-msg" id="e-part">Adicione pelo menos um participante.</div>
+        </div>
+
+        <div class="form-actions">
+          <button type="button" class="btn green" id="save-btn">Salvar reunião</button>
+          <button type="button" class="btn ghost" id="cancel-edit" style="display:none">Cancelar edição</button>
+          <span class="hint">Avisos na tela 1 h e 30 min antes.</span>
+        </div>
+      </form>
+    </section>
+
+    <!-- REUNIÕES -->
+    <section class="view" id="v-reunioes">
+      <div class="page-head">
+        <div><h1>Reuniões</h1><p>Todas as reuniões registradas, com busca e filtros.</p></div>
+        <div style="display:flex;gap:8px">
+          <button class="btn ghost" id="print-btn">Imprimir lista</button>
+          <button class="btn green" data-go="nova">Nova reunião</button>
+        </div>
+      </div>
+      <div class="filters">
+        <input class="input search" id="q" placeholder="Buscar em tudo: reunião, pessoa, equipe, participante" autocomplete="off">
+        <select class="input" id="f-dest">
+          <option value="">Todos os destinos</option>
+          <option value="pessoa">Pessoa</option>
+          <option value="equipe">Equipe</option>
+        </select>
+        <select class="input" id="f-quem"><option value="">Todos</option></select>
+        <select class="input" id="f-status">
+          <option value="">Todas as situações</option>
+          <option value="agendada">Agendada</option>
+          <option value="concluida">Concluída</option>
+          <option value="cancelada">Cancelada</option>
+        </select>
+      </div>
+      <div id="list" class="rows"></div>
+    </section>
+
+    <!-- AGENDA -->
+    <section class="view" id="v-agenda">
+      <div class="page-head">
+        <div><h1>Agenda</h1><p>🔵 reunião com pessoa · 🟢 reunião com equipe</p></div>
+      </div>
+      <div class="card">
+        <div class="cal-head">
+          <button class="btn ghost small" id="cal-prev">← Anterior</button>
+          <h3 id="cal-title"></h3>
+          <button class="btn ghost small" id="cal-next">Próximo →</button>
+        </div>
+        <div class="cal" id="cal-dows"></div>
+        <div class="cal" id="cal" style="margin-top:6px"></div>
+      </div>
+      <div class="cal-list">
+        <div class="section-head"><h3 id="cal-day-title">Selecione um dia</h3></div>
+        <div id="cal-rows" class="rows"></div>
+      </div>
+    </section>
+
+    <!-- EQUIPES -->
+    <section class="view" id="v-equipes">
+      <div class="page-head">
+        <div><h1>Equipes</h1><p>Cadastre, edite ou remova equipes sem mexer no código.</p></div>
+        <button class="btn green" id="new-team">Cadastrar equipe</button>
+      </div>
+      <div class="rows" id="teams"></div>
+    </section>
+
+    <!-- ESPECIALISTAS -->
+    <section class="view" id="v-especialistas">
+      <div class="page-head">
+        <div><h1>Especialistas</h1><p>Pessoas que participam como especialistas.</p></div>
+        <button class="btn green" data-new-person="especialista">Cadastrar especialista</button>
+      </div>
+      <div class="rows" id="especialistas"></div>
+    </section>
+
+    <!-- JUÍZES -->
+    <section class="view" id="v-juizes">
+      <div class="page-head">
+        <div><h1>Juízes</h1><p>Três categorias separadas: Juiz de Robô, Juiz de Pesquisa e Juiz de CORE.</p></div>
+        <button class="btn green" data-new-person="juiz-robo">Cadastrar juiz</button>
+      </div>
+      <div class="tchips" id="juiz-filtro"></div>
+      <div class="rows" id="juizes"></div>
+    </section>
+
+    <!-- PARTICIPANTES -->
+    <section class="view" id="v-participantes">
+      <div class="page-head">
+        <div><h1>Participantes</h1><p>Nome, cargo e e-mail. O e-mail serve para a pessoa entrar no sistema.</p></div>
+        <button class="btn green" id="new-part">Cadastrar participante</button>
+      </div>
+      <div class="rows" id="participantes"></div>
+    </section>
+
+    <!-- CONTA -->
+    <section class="view" id="v-conta">
+      <div class="page-head">
+        <div><h1>Conta</h1><p>Quem está usando o GenMeet e como a equipe compartilha as reuniões.</p></div>
+        <button class="btn ghost" id="sair-btn">Sair</button>
+      </div>
+      <div id="conta-body"></div>
+    </section>
+
+    <!-- CONFIGURAÇÕES -->
+    <section class="view" id="v-config">
+      <div class="page-head">
+        <div><h1>Configurações</h1><p>Identidade, cores, avisos, regras e menu do sistema.</p></div>
+        <button class="btn green" id="cfg-save">Salvar configurações</button>
+      </div>
+      <div id="cfg-body"></div>
+    </section>
+  </main>
+</div>
+
+<div class="toasts" id="toasts" aria-live="polite"></div>
+<div id="modal-root"></div>
+<div id="print-area"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="assets/js/app.js"></script>
+</body>
+</html>
