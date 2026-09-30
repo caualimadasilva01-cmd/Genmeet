@@ -1,365 +1,26 @@
+```html
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>GenMeet — agendamento, comunicação e registro de reuniões</title>
-<style>
-:root{
-  color-scheme: dark;
-  --bg:#1327C6;
-  --navy:#0A1240;
-  --navy-2:#070D2E;
-  --surface:#0A1240;
-  --raised:#141E63;
-  --line:#2A3AB8;
-  --line-soft:#1B2678;
-  --blue:#3350F0;
-  --blue-deep:#1F33B8;
-  --blue-light:#8FA6FF;
-  --green:#8FE01B;
-  --green-deep:#6DB414;
-  --green-light:#B4F055;
-  --teal:#1596A8;
-  --text:#D5E0FF;
-  --dim:#93A3E8;
-  --radius:14px;
-  --radius-sm:9px;
-  --atom:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'%3E%3Cg fill='none' stroke='%238FE01B' stroke-width='9'%3E%3Cellipse cx='100' cy='100' rx='88' ry='38'/%3E%3Cellipse cx='100' cy='100' rx='88' ry='38' transform='rotate(60 100 100)'/%3E%3Cellipse cx='100' cy='100' rx='88' ry='38' transform='rotate(120 100 100)'/%3E%3C/g%3E%3C/svg%3E");
-  font-synthesis-weight:none;
-}
-*{box-sizing:border-box}
-html,body{margin:0;padding:0}
-body{
-  background:var(--bg);color:var(--text);
-  font-family:"Inter","Segoe UI",system-ui,-apple-system,"Helvetica Neue",Arial,sans-serif;
-  font-size:16px;line-height:1.5;-webkit-font-smoothing:antialiased;min-height:100vh;
-}
-h1,h2,h3,h4{margin:0;font-weight:700;letter-spacing:-0.018em;line-height:1.2}
-h1{
-  font-family:"Arial Black","Archivo Black",Impact,system-ui,sans-serif;
-  font-size:1.75rem;font-weight:900;text-transform:uppercase;letter-spacing:-0.02em;color:var(--green);
-}
-h2{font-size:1.22rem}
-h3{font-size:1rem}
-p{margin:0}
-button,input,select,textarea{font:inherit;color:inherit}
-button{cursor:pointer;border:0;background:none}
-:focus-visible{outline:2px solid var(--green);outline-offset:2px;border-radius:4px}
-.num{font-variant-numeric:tabular-nums}
-.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
-
-/* ---------- shell ---------- */
-.shell{display:grid;grid-template-columns:236px 1fr;min-height:100vh}
-.rail{
-  background:var(--navy);border-right:1px solid var(--line-soft);
-  padding:22px 14px;display:flex;flex-direction:column;gap:22px;
-  position:sticky;top:0;height:100vh;overflow:hidden;
-}
-.rail::after{content:"";position:absolute;left:-70px;bottom:-60px;width:250px;height:250px;
-  background:var(--atom) center/contain no-repeat;opacity:.07;pointer-events:none}
-.brand{display:flex;align-items:center;gap:10px;padding:0 6px;position:relative;z-index:1}
-.brand svg{width:36px;height:36px;flex:none}
-.wordmark{
-  font-family:"Arial Black","Archivo Black",Impact,system-ui,sans-serif;
-  font-size:1.16rem;font-weight:900;text-transform:uppercase;letter-spacing:-0.045em;color:var(--green);
-}
-.wordmark span{color:var(--teal)}
-.nav{display:flex;flex-direction:column;gap:2px;position:relative;z-index:1}
-.nav button{display:flex;align-items:center;gap:11px;padding:9px 12px;border-radius:var(--radius-sm);
-  color:var(--dim);font-size:.93rem;font-weight:520;text-align:left;width:100%}
-.nav button:hover{background:var(--raised);color:var(--text)}
-.nav button.on{background:var(--raised);color:var(--green-light);box-shadow:inset 3px 0 0 var(--green)}
-.nav .ico{width:18px;text-align:center;font-size:1rem}
-.rail-foot{margin-top:auto;font-size:.74rem;color:#7C8BD8;padding:0 8px;line-height:1.45;position:relative;z-index:1}
-
-.main{padding:30px 34px 90px;max-width:1140px}
-.page-head{display:flex;align-items:flex-end;justify-content:space-between;gap:18px;flex-wrap:wrap;margin-bottom:22px}
-.page-head p{color:var(--dim);font-size:.92rem;margin-top:5px;max-width:64ch}
-.view{display:none}
-.view.on{display:block}
-
-/* ---------- base ---------- */
-.card{background:var(--surface);border:1px solid var(--line-soft);border-radius:var(--radius);padding:18px}
-.btn{display:inline-flex;align-items:center;gap:8px;justify-content:center;padding:10px 16px;
-  border-radius:var(--radius-sm);font-weight:600;font-size:.92rem;background:var(--blue);color:#EDF1FF}
-.btn:hover{background:#4762FF}
-.btn.green{background:var(--green);color:#0A1240}
-.btn.green:hover{background:#A3EC3A}
-.btn.ghost{background:transparent;border:1px solid var(--line);color:var(--text)}
-.btn.ghost:hover{background:var(--raised)}
-.btn.small{padding:6px 11px;font-size:.83rem;border-radius:8px}
-.badge{display:inline-flex;align-items:center;gap:6px;padding:3px 9px;border-radius:999px;font-size:.76rem;font-weight:600}
-.badge.pes{background:#16217A;color:var(--blue-light);border:1px solid #2E3FC9}
-.badge.eq{background:#2C4A07;color:var(--green-light);border:1px solid #5C9110}
-.badge.st-agendada{background:#16217A;color:var(--blue-light)}
-.badge.st-concluida{background:#2C4A07;color:var(--green-light)}
-.badge.st-cancelada{background:#131B52;color:#8593D8}
-.badge.warn{background:#3B2A05;color:#F0C64F;border:1px solid #8A6A12}
-.empty{border:1px dashed var(--line);border-radius:var(--radius);padding:28px 22px;text-align:center;color:var(--dim)}
-.empty strong{display:block;color:var(--text);font-size:1rem;margin-bottom:5px;font-weight:600}
-.section-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:0 0 12px}
-.section-head h3{color:var(--green-light)}
-
-/* ---------- painel ---------- */
-.hero{background:linear-gradient(135deg,#111C6B,#070E33);border:1px solid var(--line);border-radius:18px;
-  padding:22px 24px;margin-bottom:18px;position:relative;overflow:hidden}
-.hero::after{content:"";position:absolute;right:-46px;top:-58px;width:230px;height:230px;
-  background:var(--atom) center/contain no-repeat;opacity:.12;pointer-events:none}
-.hero-top,.avisos{position:relative;z-index:1}
-.hero-top{display:flex;justify-content:space-between;gap:18px;flex-wrap:wrap;align-items:flex-start}
-.hero-label{font-size:.8rem;color:var(--dim);margin-bottom:6px}
-.hero h2{font-size:1.5rem}
-.hero-when{margin-top:7px;color:var(--blue-light);font-size:.95rem}
-.count{text-align:right}
-.count b{display:block;font-family:"Arial Black","Archivo Black",Impact,system-ui,sans-serif;
-  font-size:2rem;font-weight:900;color:var(--green);letter-spacing:-.03em;line-height:1.1;font-variant-numeric:tabular-nums}
-.count span{font-size:.78rem;color:var(--dim)}
-.avisos{margin-top:20px;padding-top:16px;border-top:1px solid var(--line-soft);display:flex;gap:10px;flex-wrap:wrap}
-.aviso{display:flex;align-items:center;gap:9px;background:#0B1550;border:1px solid var(--line-soft);
-  border-radius:999px;padding:6px 14px 6px 10px;font-size:.85rem}
-.aviso i{width:10px;height:10px;border-radius:50%;background:var(--navy-2);border:2px solid var(--line);flex:none}
-.aviso.done i{background:var(--green);border-color:var(--green)}
-.aviso small{color:var(--dim);font-size:.78rem}
-.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:26px}
-.stat{background:var(--surface);border:1px solid var(--line-soft);border-radius:var(--radius);padding:14px 16px}
-.stat b{display:block;font-family:"Arial Black","Archivo Black",Impact,system-ui,sans-serif;
-  font-size:1.6rem;font-weight:900;letter-spacing:-.03em;line-height:1.2;font-variant-numeric:tabular-nums}
-.stat span{font-size:.8rem;color:var(--dim)}
-.stat.b b{color:var(--blue-light)}
-.stat.g b{color:var(--green-light)}
-
-/* ---------- linhas de reunião ---------- */
-.rows{display:flex;flex-direction:column;gap:9px}
-.row{display:grid;grid-template-columns:78px 1fr auto;gap:16px;align-items:center;background:var(--surface);
-  border:1px solid var(--line-soft);border-left:3px solid var(--blue);border-radius:var(--radius-sm);padding:13px 16px}
-.row.eq{border-left-color:var(--green)}
-.row.cancelada{opacity:.55}
-.when{text-align:center;line-height:1.15}
-.when b{display:block;font-size:1.3rem;font-weight:700;font-variant-numeric:tabular-nums}
-.when span{font-size:.72rem;color:var(--dim)}
-.when em{display:block;font-style:normal;font-size:.85rem;color:var(--blue-light);margin-top:3px;font-variant-numeric:tabular-nums}
-.row-main h4{margin:0 0 5px;font-size:1rem;font-weight:600}
-.meta{display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:.82rem;color:var(--dim)}
-.row-acts{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
-
-/* ---------- formulários ---------- */
-.form{display:flex;flex-direction:column;gap:20px;max-width:820px}
-.field label,.lbl{display:block;font-size:.87rem;font-weight:700;margin-bottom:7px;color:var(--green-light)}
-.hint{font-size:.8rem;color:var(--dim);font-weight:450;margin-top:5px}
-.input{width:100%;background:var(--navy-2);border:1px solid var(--line);border-radius:var(--radius-sm);
-  padding:11px 13px;font-size:.95rem}
-textarea.input{min-height:92px;resize:vertical;line-height:1.45}
-.input:focus{border-color:var(--blue);outline:none;box-shadow:0 0 0 3px rgba(51,80,240,.3)}
-.input.err{border-color:var(--green);box-shadow:0 0 0 3px rgba(143,224,27,.2)}
-.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
-.err-msg{color:var(--green-light);font-size:.83rem;margin-top:6px;display:none}
-.err-msg.on{display:block}
-.form-actions{display:flex;gap:10px;align-items:center;flex-wrap:wrap;padding-top:4px}
-
-/* destino */
-.dest{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-.dest-opt{position:relative;text-align:left;padding:16px;border-radius:var(--radius);border:1px solid var(--line);
-  background:var(--navy-2);transition:border-color .16s,background .16s}
-.dest-opt:hover{border-color:var(--blue)}
-.dest-opt .t{display:flex;align-items:center;gap:9px;font-weight:700;font-size:1rem;text-transform:uppercase;letter-spacing:-.01em}
-.dest-opt .t i{font-style:normal;font-size:1.15rem}
-.dest-opt .d{font-size:.83rem;color:var(--dim);margin-top:6px}
-.dest-opt.sel{border-color:var(--blue);background:#16217A;box-shadow:0 0 0 3px rgba(51,80,240,.28)}
-.dest-opt[data-k="equipe"].sel{border-color:var(--green);background:#2C4A07;box-shadow:0 0 0 3px rgba(143,224,27,.22)}
-.dest-opt.locked{opacity:.38;pointer-events:none;filter:saturate(.5)}
-.dest-opt .lock{position:absolute;top:11px;right:12px;font-size:.7rem;color:var(--dim);display:none}
-.dest-opt.locked .lock{display:block}
-.dest-note{font-size:.82rem;color:var(--dim);margin-top:9px}
-.dest-pick{margin-top:16px;display:none}
-.dest-pick.on{display:block}
-
-/* chips de tipo */
-.tchips{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
-.tchip{padding:8px 14px;border-radius:999px;border:1px solid var(--line);background:var(--navy-2);
-  font-size:.87rem;font-weight:600;color:var(--dim)}
-.tchip:hover{border-color:var(--blue);color:var(--text)}
-.tchip.on{background:#16217A;border-color:var(--blue);color:var(--blue-light)}
-
-/* cartões de pessoa / equipe */
-.pgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(238px,1fr));gap:10px}
-.pcard{display:flex;gap:12px;align-items:center;text-align:left;padding:12px;border-radius:var(--radius-sm);
-  border:1px solid var(--line);background:var(--navy-2);width:100%}
-.pcard:hover{border-color:var(--blue)}
-.pcard.sel{border-color:var(--green);background:#2C4A07;box-shadow:0 0 0 2px rgba(143,224,27,.22)}
-.pcard.add{border-style:dashed;background:transparent}
-.pcard.add:hover{border-color:var(--green);background:rgba(143,224,27,.06)}
-.pcard.add .avatar{background:transparent;border:1px dashed var(--line);color:var(--green-light);font-size:1.3rem}
-.pcard.add .info b{color:var(--green-light)}
-.pcard .info{min-width:0}
-.pcard .info b{display:block;font-size:.95rem;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.pcard .info span{display:block;font-size:.79rem;color:var(--dim);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.avatar{width:46px;height:46px;border-radius:11px;flex:none;object-fit:cover;background:var(--blue-deep);
-  display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.95rem;color:#DCE6FF;overflow:hidden}
-.avatar.lg{width:64px;height:64px;border-radius:14px;font-size:1.2rem}
-.avatar img{width:100%;height:100%;object-fit:cover;display:block}
-
-/* participantes */
-.chips{display:flex;flex-wrap:wrap;gap:7px;margin-top:10px}
-.chip{display:inline-flex;align-items:center;gap:7px;background:var(--raised);border:1px solid var(--line);
-  border-radius:999px;padding:5px 7px 5px 12px;font-size:.85rem}
-.chip button{color:var(--dim);font-size:1rem;line-height:1;padding:0 3px}
-.chip button:hover{color:var(--green-light)}
-.add-row{display:flex;gap:9px;flex-wrap:wrap}
-.add-row .input{flex:1;min-width:180px}
-
-/* filtros */
-.filters{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px;align-items:center}
-.filters .input{width:auto;min-width:150px;padding:9px 12px;font-size:.9rem}
-.filters .search{flex:1;min-width:210px}
-
-/* agenda */
-.cal-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;gap:12px}
-.cal-head h3{min-width:190px;text-align:center}
-.cal{display:grid;grid-template-columns:repeat(7,1fr);gap:6px}
-.dow{text-align:center;font-size:.74rem;color:var(--dim);padding-bottom:4px;font-weight:600}
-.day{min-height:82px;background:var(--navy-2);border:1px solid var(--line-soft);border-radius:10px;padding:7px 8px;
-  text-align:left;display:flex;flex-direction:column;gap:5px;width:100%}
-.day:hover{border-color:var(--blue)}
-.day.out{opacity:.32}
-.day.today{border-color:var(--blue);box-shadow:inset 0 0 0 1px var(--blue)}
-.day.sel{border-color:var(--green);box-shadow:0 0 0 2px rgba(143,224,27,.3)}
-.day .n{font-size:.85rem;font-weight:600;font-variant-numeric:tabular-nums}
-.pips{display:flex;gap:4px;flex-wrap:wrap;margin-top:auto}
-.pip{width:7px;height:7px;border-radius:50%;background:var(--blue)}
-.pip.eq{background:var(--green)}
-.cal-list{margin-top:18px}
-
-/* cadastros */
-.crud{display:flex;gap:12px;align-items:center;background:var(--surface);border:1px solid var(--line-soft);
-  border-radius:var(--radius-sm);padding:11px 14px}
-.crud .info{flex:1;min-width:0}
-.crud .info b{display:block;font-size:.96rem;font-weight:600}
-.crud .info span{display:block;font-size:.8rem;color:var(--dim)}
-.crud .acts{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
-
-/* modal */
-.overlay{position:fixed;inset:0;background:rgba(4,7,32,.72);backdrop-filter:blur(3px);z-index:60;
-  display:flex;align-items:flex-start;justify-content:center;padding:34px 16px;overflow:auto}
-.modal{background:var(--navy);border:1px solid var(--line);border-radius:18px;width:100%;max-width:720px;
-  padding:22px 24px 26px;position:relative}
-.modal h2{color:var(--green-light);padding-right:40px}
-.modal-close{position:absolute;top:14px;right:16px;font-size:1.5rem;line-height:1;color:var(--dim);padding:4px 8px}
-.modal-close:hover{color:var(--green-light)}
-.modal-sec{margin-top:22px;padding-top:18px;border-top:1px solid var(--line-soft)}
-.modal-sec h3{color:var(--green-light);margin-bottom:10px}
-.kv{display:grid;grid-template-columns:130px 1fr;gap:6px 14px;font-size:.92rem;margin-top:12px}
-.kv dt{color:var(--dim)}
-.kv dd{margin:0}
-.thumbs{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:9px;margin-top:12px}
-.thumb{position:relative;border-radius:10px;overflow:hidden;border:1px solid var(--line);aspect-ratio:1}
-.thumb img{width:100%;height:100%;object-fit:cover;display:block}
-.thumb button{position:absolute;top:5px;right:5px;background:rgba(7,13,46,.85);border:1px solid var(--line);
-  border-radius:7px;font-size:.78rem;padding:2px 7px;color:var(--text)}
-.thumb button:hover{color:var(--green-light)}
-.doc{display:flex;align-items:center;gap:11px;background:var(--navy-2);border:1px solid var(--line-soft);
-  border-radius:var(--radius-sm);padding:9px 12px;margin-top:8px}
-.doc .ic{width:36px;height:36px;border-radius:8px;background:var(--raised);display:flex;align-items:center;
-  justify-content:center;font-size:1.05rem;flex:none}
-.doc .info{flex:1;min-width:0}
-.doc .info b{display:block;font-size:.9rem;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.doc .info span{font-size:.77rem;color:var(--dim)}
-
-/* toasts */
-.toasts{position:fixed;right:18px;bottom:18px;display:flex;flex-direction:column;gap:9px;z-index:70;max-width:350px}
-.toast{background:var(--raised);border:1px solid var(--line);border-left:3px solid var(--green);border-radius:10px;
-  padding:12px 14px;box-shadow:0 12px 34px rgba(4,8,40,.6);animation:rise .22s ease-out}
-.toast b{display:block;font-size:.9rem;margin-bottom:3px}
-.toast p{font-size:.84rem;color:var(--dim)}
-.toast .btn{margin-top:9px}
-@keyframes rise{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
-@media (prefers-reduced-motion:reduce){.toast{animation:none}}
-
-/* responsivo */
-@media (max-width:900px){
-  .shell{grid-template-columns:1fr}
-  .rail::after{display:none}
-  .rail{position:fixed;bottom:0;left:0;right:0;top:auto;height:auto;flex-direction:row;align-items:center;
-    gap:8px;padding:7px 8px;border-right:0;border-top:1px solid var(--line);z-index:50;background:var(--navy)}
-  .brand,.rail-foot{display:none}
-  .nav{flex-direction:row;width:100%;gap:2px;overflow-x:auto;scrollbar-width:none}
-  .nav::-webkit-scrollbar{display:none}
-  .nav button{flex-direction:column;gap:3px;padding:6px 9px;font-size:.66rem;text-align:center;
-    justify-content:center;min-width:64px;flex:none}
-  .nav button.on{box-shadow:inset 0 2px 0 var(--green)}
-  .main{padding:18px 16px 104px}
-  .mobile-brand{display:flex!important}
-  .stats{grid-template-columns:1fr 1fr}
-  .grid2,.dest{grid-template-columns:1fr}
-  .row{grid-template-columns:64px 1fr;gap:12px}
-  .row-acts{grid-column:1/-1;justify-content:flex-start}
-  .day{min-height:58px}
-  .toasts{left:14px;right:14px;bottom:86px;max-width:none}
-  .kv{grid-template-columns:1fr;gap:2px 0}
-  .kv dd{margin-bottom:8px}
-  .overlay{padding:14px 10px}
-  .modal{padding:20px 16px 22px}
-}
-.mobile-brand{display:none;align-items:center;gap:9px;margin-bottom:18px}
-.mobile-brand svg{width:32px;height:32px}
-
-/* login */
-.login-ov{position:fixed;inset:0;background:var(--bg);z-index:90;display:flex;align-items:center;justify-content:center;padding:20px;overflow:auto}
-.login-box{background:var(--navy);border:1px solid var(--line);border-radius:20px;padding:30px 28px;width:100%;max-width:420px;position:relative;overflow:hidden}
-.login-box::after{content:"";position:absolute;right:-60px;top:-70px;width:220px;height:220px;background:var(--atom) center/contain no-repeat;opacity:.1}
-.login-box .brand{margin-bottom:18px;position:relative;z-index:1}
-.login-box h2{color:var(--green-light);position:relative;z-index:1}
-.login-box .form{position:relative;z-index:1;margin-top:18px;gap:14px}
-.sync-dot{display:inline-block;width:9px;height:9px;border-radius:50%;background:var(--green);margin-right:7px}
-.sync-dot.off{background:#8593D8}
-
-/* aviso de armazenamento */
-.storage-warn{background:#3B2A05;border-bottom:1px solid #8A6A12;color:#F0C64F;padding:11px 18px;font-size:.86rem;line-height:1.45}
-.storage-warn b{color:#FFD873}
-.storage-warn button{margin-left:10px;text-decoration:underline;color:inherit;font-size:.84rem}
-
-/* configurações */
-.brand img,.mobile-brand img{width:36px;height:36px;border-radius:9px;object-fit:contain;background:var(--navy-2)}
-.cfg-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px;margin-bottom:14px}
-.cfg-card{background:var(--surface);border:1px solid var(--line-soft);border-radius:var(--radius);padding:18px}
-.cfg-card h3{color:var(--green-light);margin-bottom:4px}
-.cfg-card>.hint{margin-bottom:14px}
-.cfg-row{display:flex;align-items:center;gap:10px;margin-bottom:9px}
-.cfg-row label{flex:1;font-size:.9rem;margin:0;color:var(--text);font-weight:500}
-input[type=color]{width:52px;height:36px;padding:2px;border:1px solid var(--line);border-radius:8px;background:var(--navy-2);flex:none}
-input[type=checkbox]{width:18px;height:18px;accent-color:var(--green);flex:none}
-.mini{width:92px;flex:none;text-align:center}
-.cfg-actions{display:flex;gap:9px;flex-wrap:wrap;margin-top:12px}
-
-/* impressão */
-#print-area{display:none}
-@media print{
-  body{background:#EAF4FB;color:#0A1240}
-  .rail,.toasts,.main,.overlay{display:none!important}
-  #print-area{display:block}
-  #print-area h1{font-size:18pt;margin-bottom:4pt;color:#0A1240}
-  #print-area .p-sub{color:#1F33B8;font-size:10pt;margin-bottom:14pt}
-  #print-area table{width:100%;border-collapse:collapse;font-size:10pt}
-  #print-area th{text-align:left;border-bottom:1.5pt solid #6DB414;padding:6pt 4pt;color:#4A7A0C}
-  #print-area td{border-bottom:.5pt solid #9CC3DD;padding:6pt 4pt;vertical-align:top}
-}
-
-/* status Supabase */
-#supabase-status{position:fixed;top:12px;right:14px;z-index:99999;display:flex;align-items:center;gap:7px;padding:7px 10px;border-radius:999px;background:rgba(10,18,64,.94);color:#fff;font:600 12px/1.1 system-ui,sans-serif;box-shadow:0 4px 14px rgba(0,0,0,.18);cursor:default}
-#supabase-status .dot{width:10px;height:10px;border-radius:50%;background:#f0a500;box-shadow:0 0 0 3px rgba(255,255,255,.12)}
-#supabase-status.ok .dot{background:#36d16f}
-#supabase-status.save .dot{background:#2f8cff}
-#supabase-status.err .dot{background:#ff4d5d}
-#supabase-status .status-text{white-space:nowrap}
-@media(max-width:700px){#supabase-status{top:8px;right:8px;padding:6px 8px}.shell{padding-top:38px}}
-</style>
+<link rel="stylesheet" href="assets/css/styles.css">
 </head>
+
 <body>
-<div id="supabase-status" title="Status da conexão com o Supabase"><span class="dot"></span><span class="status-text">Conectando...</span></div>
+
+<div id="supabase-status" title="Status da conexão com o Supabase">
+  <span class="dot"></span>
+  <span class="status-text">Conectando...</span>
+</div>
 
 <div id="storage-warn" class="storage-warn" style="display:none"></div>
+
 <div class="shell">
+
   <aside class="rail">
+
     <div class="brand">
       <svg viewBox="0 0 48 48" aria-hidden="true">
         <g fill="none" stroke="#8FE01B" stroke-width="3.2">
@@ -371,25 +32,63 @@ input[type=checkbox]{width:18px;height:18px;accent-color:var(--green);flex:none}
         <circle cx="8.4" cy="33" r="3.8" fill="#3350F0"/>
         <circle cx="39.6" cy="33" r="3.8" fill="#B4F055"/>
       </svg>
+
       <span class="wordmark">Gen<span>Meet</span></span>
     </div>
 
     <nav class="nav" id="nav">
-      <button data-v="painel" class="on"><span class="ico">◈</span>Painel</button>
-      <button data-v="nova"><span class="ico">＋</span>Nova reunião</button>
-      <button data-v="reunioes"><span class="ico">≡</span>Reuniões</button>
-      <button data-v="agenda"><span class="ico">▦</span>Agenda</button>
-      <button data-v="equipes"><span class="ico">◇</span>Equipes</button>
-      <button data-v="especialistas"><span class="ico">👤</span>Especialistas</button>
-      <button data-v="juizes"><span class="ico">⚖️</span>Juízes</button>
-      <button data-v="participantes"><span class="ico">👥</span>Participantes</button>
-      <button data-v="config"><span class="ico">⚙</span>Configurações</button>
+
+      <button data-v="painel" class="on">
+        <span class="ico">◈</span>Painel
+      </button>
+
+      <button data-v="nova">
+        <span class="ico">＋</span>Nova reunião
+      </button>
+
+      <button data-v="reunioes">
+        <span class="ico">≡</span>Reuniões
+      </button>
+
+      <button data-v="agenda">
+        <span class="ico">▦</span>Agenda
+      </button>
+
+      <button data-v="equipes">
+        <span class="ico">◇</span>Equipes
+      </button>
+
+      <button data-v="especialistas">
+        <span class="ico">👤</span>Especialistas
+      </button>
+
+      <button data-v="juizes">
+        <span class="ico">⚖️</span>Juízes
+      </button>
+
+      <button data-v="participantes">
+        <span class="ico">👥</span>Participantes
+      </button>
+
+      <button data-v="conta">
+        <span class="ico">🔑</span>Conta
+      </button>
+
+      <button data-v="config">
+        <span class="ico">⚙</span>Configurações
+      </button>
+
     </nav>
 
-    <div class="rail-foot">Avisos automáticos 1 h e 30 min antes de cada reunião.</div>
+    <div class="rail-foot">
+      Avisos automáticos 1 h e 30 min antes de cada reunião.
+    </div>
+
   </aside>
 
+
   <main class="main">
+
     <div class="mobile-brand">
       <svg viewBox="0 0 48 48" aria-hidden="true">
         <g fill="none" stroke="#8FE01B" stroke-width="3.2">
@@ -401,2268 +100,824 @@ input[type=checkbox]{width:18px;height:18px;accent-color:var(--green);flex:none}
         <circle cx="8.4" cy="33" r="3.8" fill="#3350F0"/>
         <circle cx="39.6" cy="33" r="3.8" fill="#B4F055"/>
       </svg>
+
       <span class="wordmark">Gen<span>Meet</span></span>
     </div>
 
+
     <!-- PAINEL -->
+
     <section class="view on" id="v-painel">
+
       <div class="page-head">
-        <div><h1>Painel</h1><p>A próxima reunião e os avisos que o GenMeet vai disparar.</p></div>
-        <button class="btn green" data-go="nova">Agendar reunião</button>
+        <div>
+          <h1>Painel</h1>
+          <p>A próxima reunião e os avisos que o GenMeet vai disparar.</p>
+        </div>
+
+        <button class="btn green" data-go="nova">
+          Agendar reunião
+        </button>
       </div>
+
       <div id="alert-box"></div>
+
       <div id="hero"></div>
+
       <div class="stats" id="stats"></div>
-      <div class="section-head"><h3>Próximas reuniões</h3><button class="btn ghost small" data-go="reunioes">Ver todas</button></div>
+
+      <div class="section-head">
+        <h3>Próximas reuniões</h3>
+
+        <button class="btn ghost small" data-go="reunioes">
+          Ver todas
+        </button>
+      </div>
+
       <div id="upcoming" class="rows"></div>
+
     </section>
+
 
     <!-- NOVA REUNIÃO -->
+
     <section class="view" id="v-nova">
+
       <div class="page-head">
-        <div><h1 id="form-title">Nova reunião</h1>
-        <p>Cada reunião tem um destino único: pessoa ou equipe. Nunca os dois.</p></div>
+
+        <div>
+          <h1 id="form-title">Nova reunião</h1>
+
+          <p>
+            Cada reunião tem um destino único:
+            pessoa ou equipe. Nunca os dois.
+          </p>
+        </div>
+
       </div>
+
 
       <form class="form" id="form" novalidate>
+
         <div class="field">
-          <label for="f-nome">Nome da reunião</label>
-          <input class="input" id="f-nome" maxlength="90" placeholder="Ex.: Alinhamento de rota do robô" autocomplete="off">
-          <div class="err-msg" id="e-nome">Dê um nome à reunião.</div>
+
+          <label for="f-nome">
+            Nome da reunião
+          </label>
+
+          <input
+            class="input"
+            id="f-nome"
+            maxlength="90"
+            placeholder="Ex.: Alinhamento de rota do robô"
+            autocomplete="off"
+          >
+
+          <div class="err-msg" id="e-nome">
+            Dê um nome à reunião.
+          </div>
+
         </div>
+
 
         <div class="grid2">
+
           <div class="field">
-            <label for="f-data">Data</label>
-            <input class="input" id="f-data" type="date">
-            <div class="err-msg" id="e-data">Escolha uma data de hoje em diante.</div>
+
+            <label for="f-data">
+              Data
+            </label>
+
+            <input
+              class="input"
+              id="f-data"
+              type="date"
+            >
+
+            <div class="err-msg" id="e-data">
+              Escolha uma data de hoje em diante.
+            </div>
+
           </div>
+
+
           <div class="field">
-            <label for="f-hora">Hora</label>
-            <input class="input" id="f-hora" type="time">
-            <div class="err-msg" id="e-hora">Escolha a hora de início.</div>
+
+            <label for="f-hora">
+              Hora
+            </label>
+
+            <input
+              class="input"
+              id="f-hora"
+              type="time"
+            >
+
+            <div class="err-msg" id="e-hora">
+              Escolha a hora de início.
+            </div>
+
           </div>
+
         </div>
 
+
         <div class="field">
-          <label for="f-criador">Quem criou a reunião?</label>
+
+          <label for="f-criador">
+            Quem criou a reunião?
+          </label>
+
           <select class="input" id="f-criador">
-            <option value="">Selecione quem criou a reunião</option>
+
+            <option value="">
+              Selecione quem criou a reunião
+            </option>
+
           </select>
-          <p class="hint">Escolha uma pessoa da lista para registrar quem marcou a reunião.</p>
-          <div class="err-msg" id="e-criador">Escolha quem criou a reunião.</div>
+
+          <div class="err-msg" id="e-criador">
+            Escolha quem criou a reunião.
+          </div>
+
         </div>
 
+
         <div class="field">
-          <label>Destino da reunião</label>
+
+          <label>
+            Destino da reunião
+          </label>
+
           <div class="dest">
-            <button type="button" class="dest-opt" data-k="pessoa">
-              <span class="lock">bloqueado</span>
-              <span class="t"><i>👤</i>Pessoa</span>
-              <span class="d">Reunião com uma pessoa</span>
+
+            <button
+              type="button"
+              class="dest-opt"
+              data-k="pessoa"
+            >
+              <span class="lock">
+                bloqueado
+              </span>
+
+              <span class="t">
+                <i>👤</i>Pessoa
+              </span>
+
+              <span class="d">
+                Reunião com uma pessoa
+              </span>
             </button>
-            <button type="button" class="dest-opt" data-k="equipe">
-              <span class="lock">bloqueado</span>
-              <span class="t"><i>👥</i>Equipe</span>
-              <span class="d">Reunião com uma equipe</span>
+
+
+            <button
+              type="button"
+              class="dest-opt"
+              data-k="equipe"
+            >
+              <span class="lock">
+                bloqueado
+              </span>
+
+              <span class="t">
+                <i>👥</i>Equipe
+              </span>
+
+              <span class="d">
+                Reunião com uma equipe
+              </span>
             </button>
+
           </div>
-          <p class="dest-note" id="dest-note">Escolha um dos dois. Ao selecionar, o outro fica bloqueado.</p>
+
+
+          <p class="dest-note" id="dest-note">
+            Escolha um dos dois. Ao selecionar, o outro fica bloqueado.
+          </p>
+
 
           <div class="dest-pick" id="pick-pes">
-            <span class="lbl">Tipo de pessoa</span>
+
+            <span class="lbl">
+              Tipo de pessoa
+            </span>
+
             <div class="tchips" id="tipo-chips"></div>
+
             <div class="pgrid" id="people-pick"></div>
+
           </div>
+
+
           <div class="dest-pick" id="pick-eq">
-            <span class="lbl">Escolha a equipe</span>
+
+            <span class="lbl">
+              Escolha a equipe
+            </span>
+
             <div class="pgrid" id="team-pick"></div>
+
           </div>
-          <div class="err-msg" id="e-dest">Escolha o destino e selecione quem participa.</div>
+
+
+          <div class="err-msg" id="e-dest">
+            Escolha o destino e selecione quem participa.
+          </div>
+
         </div>
+
 
         <div class="field">
-          <label for="f-part">Participantes</label>
+
+          <label for="f-part">
+            Participantes
+          </label>
+
           <div class="add-row">
-            <select class="input" id="f-part"></select>
-            <button type="button" class="btn ghost" id="add-part">Adicionar à reunião</button>
-            <button type="button" class="btn ghost" id="new-part-inline">+ Cadastrar participante</button>
+
+            <select
+              class="input"
+              id="f-part"
+            ></select>
+
+            <button
+              type="button"
+              class="btn ghost"
+              id="add-part"
+            >
+              Adicionar à reunião
+            </button>
+
+            <button
+              type="button"
+              class="btn ghost"
+              id="new-part-inline"
+            >
+              + Cadastrar participante
+            </button>
+
           </div>
-          <div class="chips" id="chips"></div>
-          <p class="hint">Os participantes vêm do cadastro e aparecem no aviso de lembrete.</p>
-          <div class="err-msg" id="e-part">Adicione pelo menos um participante.</div>
+
+
+          <div
+            class="chips"
+            id="chips"
+          ></div>
+
+
+          <p class="hint">
+            Os participantes vêm do cadastro e aparecem no aviso de lembrete.
+          </p>
+
+
+          <div
+            class="err-msg"
+            id="e-part"
+          >
+            Adicione pelo menos um participante.
+          </div>
+
         </div>
+
 
         <div class="form-actions">
-          <button type="button" class="btn green" id="save-btn">Salvar reunião</button>
-          <button type="button" class="btn ghost" id="cancel-edit" style="display:none">Cancelar edição</button>
-          <span class="hint">Avisos na tela 1 h e 30 min antes.</span>
+
+          <button
+            type="button"
+            class="btn green"
+            id="save-btn"
+          >
+            Salvar reunião
+          </button>
+
+          <button
+            type="button"
+            class="btn ghost"
+            id="cancel-edit"
+            style="display:none"
+          >
+            Cancelar edição
+          </button>
+
+          <span class="hint">
+            Avisos na tela 1 h e 30 min antes.
+          </span>
+
         </div>
+
       </form>
+
     </section>
+
 
     <!-- REUNIÕES -->
+
     <section class="view" id="v-reunioes">
+
       <div class="page-head">
-        <div><h1>Reuniões</h1><p>Todas as reuniões registradas, com busca e filtros.</p></div>
-        <div style="display:flex;gap:8px">
-          <button class="btn ghost" id="print-btn">Imprimir lista</button>
-          <button class="btn green" data-go="nova">Nova reunião</button>
+
+        <div>
+
+          <h1>Reuniões</h1>
+
+          <p>
+            Todas as reuniões registradas,
+            com busca e filtros.
+          </p>
+
         </div>
+
+
+        <div style="display:flex;gap:8px">
+
+          <button
+            class="btn ghost"
+            id="print-btn"
+          >
+            Imprimir lista
+          </button>
+
+          <button
+            class="btn green"
+            data-go="nova"
+          >
+            Nova reunião
+          </button>
+
+        </div>
+
       </div>
+
+
       <div class="filters">
-        <input class="input search" id="q" placeholder="Buscar em tudo: reunião, pessoa, equipe, participante" autocomplete="off">
-        <select class="input" id="f-dest">
-          <option value="">Todos os destinos</option>
-          <option value="pessoa">Pessoa</option>
-          <option value="equipe">Equipe</option>
+
+        <input
+          class="input search"
+          id="q"
+          placeholder="Buscar em tudo: reunião, pessoa, equipe, participante"
+          autocomplete="off"
+        >
+
+        <select
+          class="input"
+          id="f-dest"
+        >
+
+          <option value="">
+            Todos os destinos
+          </option>
+
+          <option value="pessoa">
+            Pessoa
+          </option>
+
+          <option value="equipe">
+            Equipe
+          </option>
+
         </select>
-        <select class="input" id="f-quem"><option value="">Todos</option></select>
-        <select class="input" id="f-status">
-          <option value="">Todas as situações</option>
-          <option value="agendada">Agendada</option>
-          <option value="concluida">Concluída</option>
-          <option value="cancelada">Cancelada</option>
+
+
+        <select
+          class="input"
+          id="f-quem"
+        >
+          <option value="">
+            Todos
+          </option>
         </select>
+
+
+        <select
+          class="input"
+          id="f-status"
+        >
+
+          <option value="">
+            Todas as situações
+          </option>
+
+          <option value="agendada">
+            Agendada
+          </option>
+
+          <option value="concluida">
+            Concluída
+          </option>
+
+          <option value="cancelada">
+            Cancelada
+          </option>
+
+        </select>
+
       </div>
-      <div id="list" class="rows"></div>
+
+
+      <div
+        id="list"
+        class="rows"
+      ></div>
+
     </section>
+
 
     <!-- AGENDA -->
+
     <section class="view" id="v-agenda">
+
       <div class="page-head">
-        <div><h1>Agenda</h1><p>🔵 reunião com pessoa · 🟢 reunião com equipe</p></div>
-      </div>
-      <div class="card">
-        <div class="cal-head">
-          <button class="btn ghost small" id="cal-prev">← Anterior</button>
-          <h3 id="cal-title"></h3>
-          <button class="btn ghost small" id="cal-next">Próximo →</button>
+
+        <div>
+
+          <h1>Agenda</h1>
+
+          <p>
+            🔵 reunião com pessoa ·
+            🟢 reunião com equipe
+          </p>
+
         </div>
-        <div class="cal" id="cal-dows"></div>
-        <div class="cal" id="cal" style="margin-top:6px"></div>
+
       </div>
+
+
+      <div class="card">
+
+        <div class="cal-head">
+
+          <button
+            class="btn ghost small"
+            id="cal-prev"
+          >
+            ← Anterior
+          </button>
+
+          <h3 id="cal-title"></h3>
+
+          <button
+            class="btn ghost small"
+            id="cal-next"
+          >
+            Próximo →
+          </button>
+
+        </div>
+
+
+        <div
+          class="cal"
+          id="cal-dows"
+        ></div>
+
+
+        <div
+          class="cal"
+          id="cal"
+          style="margin-top:6px"
+        ></div>
+
+      </div>
+
+
       <div class="cal-list">
-        <div class="section-head"><h3 id="cal-day-title">Selecione um dia</h3></div>
-        <div id="cal-rows" class="rows"></div>
+
+        <div class="section-head">
+
+          <h3 id="cal-day-title">
+            Selecione um dia
+          </h3>
+
+        </div>
+
+
+        <div
+          id="cal-rows"
+          class="rows"
+        ></div>
+
       </div>
+
     </section>
+
 
     <!-- EQUIPES -->
+
     <section class="view" id="v-equipes">
+
       <div class="page-head">
-        <div><h1>Equipes</h1><p>Cadastre, edite ou remova equipes sem mexer no código.</p></div>
-        <button class="btn green" id="new-team">Cadastrar equipe</button>
+
+        <div>
+
+          <h1>Equipes</h1>
+
+          <p>
+            Cadastre, edite ou remova equipes
+            sem mexer no código.
+          </p>
+
+        </div>
+
+        <button
+          class="btn green"
+          id="new-team"
+        >
+          Cadastrar equipe
+        </button>
+
       </div>
-      <div class="rows" id="teams"></div>
+
+
+      <div
+        class="rows"
+        id="teams"
+      ></div>
+
     </section>
+
 
     <!-- ESPECIALISTAS -->
+
     <section class="view" id="v-especialistas">
+
       <div class="page-head">
-        <div><h1>Especialistas</h1><p>Pessoas que participam como especialistas.</p></div>
-        <button class="btn green" data-new-person="especialista">Cadastrar especialista</button>
+
+        <div>
+
+          <h1>Especialistas</h1>
+
+          <p>
+            Pessoas que participam como especialistas.
+          </p>
+
+        </div>
+
+        <button
+          class="btn green"
+          data-new-person="especialista"
+        >
+          Cadastrar especialista
+        </button>
+
       </div>
-      <div class="rows" id="especialistas"></div>
+
+
+      <div
+        class="rows"
+        id="especialistas"
+      ></div>
+
     </section>
+
 
     <!-- JUÍZES -->
+
     <section class="view" id="v-juizes">
+
       <div class="page-head">
-        <div><h1>Juízes</h1><p>Três categorias separadas: Juiz de Robô, Juiz de Pesquisa e Juiz de CORE.</p></div>
-        <button class="btn green" data-new-person="juiz-robo">Cadastrar juiz</button>
+
+        <div>
+
+          <h1>Juízes</h1>
+
+          <p>
+            Três categorias separadas:
+            Juiz de Robô, Juiz de Pesquisa e Juiz de CORE.
+          </p>
+
+        </div>
+
+        <button
+          class="btn green"
+          data-new-person="juiz-robo"
+        >
+          Cadastrar juiz
+        </button>
+
       </div>
-      <div class="tchips" id="juiz-filtro"></div>
-      <div class="rows" id="juizes"></div>
+
+
+      <div
+        class="tchips"
+        id="juiz-filtro"
+      ></div>
+
+
+      <div
+        class="rows"
+        id="juizes"
+      ></div>
+
     </section>
+
 
     <!-- PARTICIPANTES -->
+
     <section class="view" id="v-participantes">
+
       <div class="page-head">
-        <div><h1>Participantes</h1><p>Nome, cargo e e-mail. Cadastre nome, cargo e e-mail para usar nas reuniões.</p></div>
-        <button class="btn green" id="new-part">Cadastrar participante</button>
+
+        <div>
+
+          <h1>Participantes</h1>
+
+          <p>
+            Nome, cargo e e-mail.
+            O e-mail serve para a pessoa entrar no sistema.
+          </p>
+
+        </div>
+
+        <button
+          class="btn green"
+          id="new-part"
+        >
+          Cadastrar participante
+        </button>
+
       </div>
-      <div class="rows" id="participantes"></div>
+
+
+      <div
+        class="rows"
+        id="participantes"
+      ></div>
+
     </section>
+
+
+    <!-- CONTA -->
+
+    <section class="view" id="v-conta">
+
+      <div class="page-head">
+
+        <div>
+
+          <h1>Conta</h1>
+
+          <p>
+            Quem está usando o GenMeet e como a equipe
+            compartilha as reuniões.
+          </p>
+
+        </div>
+
+        <button
+          class="btn ghost"
+          id="sair-btn"
+        >
+          Sair
+        </button>
+
+      </div>
+
+
+      <div id="conta-body"></div>
+
+    </section>
+
 
     <!-- CONFIGURAÇÕES -->
+
     <section class="view" id="v-config">
+
       <div class="page-head">
-        <div><h1>Configurações</h1><p>Identidade, cores, avisos, regras e menu do sistema.</p></div>
-        <button class="btn green" id="cfg-save">Salvar configurações</button>
+
+        <div>
+
+          <h1>Configurações</h1>
+
+          <p>
+            Identidade, cores, avisos,
+            regras e menu do sistema.
+          </p>
+
+        </div>
+
+        <button
+          class="btn green"
+          id="cfg-save"
+        >
+          Salvar configurações
+        </button>
+
       </div>
+
+
       <div id="cfg-body"></div>
+
     </section>
+
   </main>
+
 </div>
 
-<div class="toasts" id="toasts" aria-live="polite"></div>
+
+<div
+  class="toasts"
+  id="toasts"
+  aria-live="polite"
+></div>
+
 <div id="modal-root"></div>
+
 <div id="print-area"></div>
 
-<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+
+<!-- SUPABASE -->
+
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+
+<!--
+  Ponte de validação para o salvamento das reuniões.
+  O app.js pode utilizar window.GenMeetSaveFix
+  para confirmar que os IDs dos participantes
+  realmente existem na tabela participantes.
+-->
+
 <script>
-if (!window.supabase || typeof window.supabase.createClient !== "function") {
-  document.write('<script src="https://unpkg.com/@supabase/supabase-js@2"><\/script>');
-}
-</script>
-<script>
-document.addEventListener("DOMContentLoaded", function(){
-(function(){
-"use strict";
+window.GenMeetSaveFix = {
 
-/* ================= constantes ================= */
-const KEY = "genmeet:state";
-const SUPABASE_URL = "https://yvupafbdutziaenwfdyy.supabase.co";
-const SUPABASE_KEY = "sb_publishable_MVn0VSHv8n0UB8GH2xzFjQ_nrexHle3";
-const sb = (window.supabase && typeof window.supabase.createClient === "function")
-  ? window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY, { auth: { persistSession:false, autoRefreshToken:false, detectSessionInUrl:false } })
-  : null;
+  async getParticipanteId(supabase, participanteId) {
 
-let supabaseStatusTimer=null;
-function setSupabaseStatus(kind,text){
-  const el=document.getElementById("supabase-status");
-  if(!el) return;
-  el.className=kind||"";
-  const t=el.querySelector(".status-text");
-  if(t) t.textContent=text||"Supabase";
-  if(kind === "err" || kind === "warn") {
-    el.title = "Supabase: " + (text || "erro");
-  } else {
-    el.title = "Status da conexão com o Supabase";
-  }
-}
-function mostrarDiagnosticoFixo(texto){
-  let box=document.getElementById("supabase-debug");
-  if(!box){
-    box=document.createElement("div"); box.id="supabase-debug";
-    box.style.cssText="position:fixed;left:14px;right:14px;bottom:14px;z-index:100000;background:#0A1240;color:#fff;border:2px solid #ff4d5d;border-radius:12px;padding:12px 14px;font:13px/1.45 system-ui,sans-serif;box-shadow:0 8px 30px rgba(0,0,0,.35);max-height:180px;overflow:auto";
-    document.body.appendChild(box);
-  }
-  box.textContent=texto;
-}
-function mostrarErroSupabase(label, err){
-  const msg = err && (err.message || err.details || err.hint || err.code) ?
-    [err.message, err.details, err.hint, err.code ? "código " + err.code : ""].filter(Boolean).join(" · ") :
-    String(err || "erro desconhecido");
-  const texto = label + ": " + msg;
-  console.error("GenMeet · Supabase", texto, err);
-  setSupabaseStatus("err", "Supabase: erro");
-  mostrarDiagnosticoFixo(texto);
-  try { toast("Erro no Supabase", texto); } catch(e) {}
-}
-async function verificarSupabase(){
-  // A conexão é verificada pelo sincronismo em segundo plano.
-  // Não fazemos uma chamada de Auth só para abrir o site.
-  setSupabaseStatus("","Conectando...");
-}
-function statusSalvo(){
-  clearTimeout(supabaseStatusTimer);
-  setSupabaseStatus("save","Salvo");
-  supabaseStatusTimer=setTimeout(verificarSupabase,1800);
-}
-const MEDIA = id => "genmeet:media:" + id;
-const DEFAULT_CFG = {
-  nome:"GenMeet",
-  logo:"",
-  cores:{bg:"#1327C6", navy:"#0A1240", blue:"#3350F0", green:"#8FE01B", teal:"#1596A8"},
-  lembretes:[60,30],
-  notificacoes:true,
-  servidor:"",
-  regras:{participantesObrig:true, bloquearPassado:true, confirmarExclusao:true},
-  rotulos:{"especialista":"Especialista","juiz-robo":"Juiz de Robô","juiz-pesquisa":"Juiz de Pesquisa","juiz-core":"Juiz de CORE"},
-  menu:{nova:true, reunioes:true, agenda:true, equipes:true, especialistas:true, juizes:true, participantes:true}
-};
-const clone = o => JSON.parse(JSON.stringify(o));
-function cfg(){ return (typeof state !== "undefined" && state.cfg) ? state.cfg : DEFAULT_CFG; }
-function rotMin(min){
-  if(min % 60 === 0){ const h = min/60; return h + (h === 1 ? " hora antes" : " horas antes"); }
-  return min + " minutos antes";
-}
-function reminders(){
-  return (cfg().lembretes || [60,30]).slice().sort((a,b) => b-a).map(min => ({min, rot: rotMin(min)}));
-}
-const TIPOS = [
-  {k:"especialista",  label:"Especialista",     icon:"👤"},
-  {k:"juiz-robo",     label:"Juiz de Robô",     icon:"⚖️"},
-  {k:"juiz-pesquisa", label:"Juiz de Pesquisa", icon:"⚖️"},
-  {k:"juiz-core",     label:"Juiz de CORE",     icon:"⚖️"}
-];
-const tipoLabel = k => (cfg().rotulos && cfg().rotulos[k]) || (TIPOS.find(t => t.k === k) || {label:"—"}).label;
-const tipoIcon  = k => (TIPOS.find(t => t.k === k) || {icon:"👤"}).icon;
-
-/* ================= estado ================= */
-let state = {
-  v: 2,
-  cfg: clone(DEFAULT_CFG),
-  teams: [
-    {id:"t1", nome:"Robotic Generation", logo:"", descricao:"", info:""},
-    {id:"t2", nome:"Equipe 02",          logo:"", descricao:"", info:""}
-  ],
-  people: [],
-  participants: [],
-  meetings: [],
-  fired: [],
-  lixeira: []
-};
-let editingId = null, selParts = [], destino = null, destValor = null, tipoSel = "especialista";
-let juizFiltro = "";
-let calRef = new Date(), calSel = null;
-
-/* Armazenamento permanente: usa window.storage quando disponível (ambiente de artifact);
-   fora dele (arquivo aberto direto no navegador, hospedado em um servidor, etc.) usa IndexedDB,
-   que é local ao navegador e sobrevive a fechar a aba, recarregar a página e reiniciar o computador. */
-const idbStore = (() => {
-  let dbp = null;
-  function open(){
-    if(dbp) return dbp;
-    dbp = new Promise((resolve, reject) => {
-      if(typeof indexedDB === "undefined"){ reject(new Error("sem indexedDB")); return; }
-      const req = indexedDB.open("genmeet-db", 1);
-      req.onupgradeneeded = () => { req.result.createObjectStore("kv"); };
-      req.onsuccess = () => resolve(req.result);
-      req.onerror = () => reject(req.error);
-    });
-    return dbp;
-  }
-  async function store(mode){ const db = await open(); return db.transaction("kv", mode).objectStore("kv"); }
-  return {
-    async get(key){
-      const s = await store("readonly");
-      return new Promise((resolve, reject) => {
-        const r = s.get(key);
-        r.onsuccess = () => resolve(r.result === undefined ? null : {key, value: r.result});
-        r.onerror = () => reject(r.error);
-      });
-    },
-    async set(key, value){
-      const s = await store("readwrite");
-      return new Promise((resolve, reject) => {
-        const r = s.put(value, key);
-        r.onsuccess = () => resolve({key, value});
-        r.onerror = () => reject(r.error);
-      });
-    },
-    async delete(key){
-      const s = await store("readwrite");
-      return new Promise((resolve, reject) => {
-        const r = s.delete(key);
-        r.onsuccess = () => resolve({key, deleted:true});
-        r.onerror = () => reject(r.error);
-      });
+    if (!participanteId) {
+      return null;
     }
-  };
-})();
-const lsStore = (() => {
-  try{
-    if(typeof localStorage === "undefined") return null;
-    localStorage.setItem("genmeet:teste","1"); localStorage.removeItem("genmeet:teste");
-  }catch(e){ return null; }
-  return {
-    async get(key){ const v = localStorage.getItem(key); return v === null ? null : {key, value:v}; },
-    async set(key, value){ localStorage.setItem(key, value); return {key, value}; },
-    async delete(key){ localStorage.removeItem(key); return {key, deleted:true}; }
-  };
-})();
-const memStore = (() => {
-  const m = new Map();
-  return {
-    async get(key){ return m.has(key) ? {key, value:m.get(key)} : null; },
-    async set(key, value){ m.set(key, value); return {key, value}; },
-    async delete(key){ m.delete(key); return {key, deleted:true}; }
-  };
-})();
-const hostStore = (typeof window !== "undefined" && window.storage && typeof window.storage.get === "function") ? window.storage : null;
-const CHAIN = [hostStore, idbStore, lsStore, memStore].filter(Boolean);
-/* grava no primeiro armazenamento que aceitar; lê de todos até achar o dado */
-const Store = {
-  async get(key){
-    for(const st of CHAIN){
-      try{ const r = await st.get(key); if(r && r.value != null) return r; }catch(e){}
-    }
-    return null;
-  },
-  async set(key, value){
-    let erro = null;
-    for(const st of CHAIN){
-      try{ await st.set(key, value); avisoArmazenamento(st === memStore); return true; }
-      catch(e){ erro = e; }
-    }
-    avisoArmazenamento(true);
-    throw erro || new Error("sem armazenamento");
-  },
-  async delete(key){
-    for(const st of CHAIN){ try{ await st.delete(key); }catch(e){} }
-    return true;
-  }
-};
-const hasStore = true;
-function avisoArmazenamento(semGravacao){
-  const el = document.getElementById("storage-warn");
-  if(!el) return;
-  if(!semGravacao){ el.style.display = "none"; return; }
-  if(el.dataset.on === "1") return;
-  el.dataset.on = "1";
-  el.style.display = "block";
-  el.innerHTML = "<b>Os dados estão apenas nesta sessão.</b> Este navegador está bloqueando o armazenamento local — " +
-    "costuma acontecer ao abrir o arquivo direto do disco ou em janela anônima. Tudo continua funcionando, mas ao fechar a " +
-    "página os dados se perdem. Publique o GenMeet em um site para manter o acesso compartilhado entre dispositivos." +
-    '<button onclick="this.parentNode.style.display=\'none\'">fechar</button>';
-}
 
-/* ================= utilidades ================= */
-const $  = s => document.querySelector(s);
-const $$ = s => Array.from(document.querySelectorAll(s));
-const uid = () => {
-  try { if (typeof crypto !== "undefined" && crypto.randomUUID) return crypto.randomUUID(); } catch(e) {}
-  const a = new Uint8Array(16);
-  try { if (crypto && crypto.getRandomValues) crypto.getRandomValues(a); } catch(e) { for(let i=0;i<a.length;i++) a[i]=Math.floor(Math.random()*256); }
-  a[6]=(a[6]&15)|64; a[8]=(a[8]&63)|128;
-  const h=[...a].map(x=>x.toString(16).padStart(2,"0")).join("");
-  return h.slice(0,8)+"-"+h.slice(8,12)+"-"+h.slice(12,16)+"-"+h.slice(16,20)+"-"+h.slice(20);
-};
-const isUUID = v => /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(String(v||""));
-const MESES = ["janeiro","fevereiro","março","abril","maio","junho","julho","agosto","setembro","outubro","novembro","dezembro"];
-const MES3  = ["jan","fev","mar","abr","mai","jun","jul","ago","set","out","nov","dez"];
-const DOWS  = ["dom","seg","ter","qua","qui","sex","sáb"];
+    const { data, error } = await supabase
+      .from("participantes")
+      .select("id")
+      .eq("id", participanteId)
+      .maybeSingle();
 
-const touch = o => { if(o) o.upd = Date.now(); return o; };
-const esc = s => String(s == null ? "" : s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
-const dt = m => new Date(m.data + "T" + m.hora + ":00");
-const iso = d => d.getFullYear() + "-" + String(d.getMonth()+1).padStart(2,"0") + "-" + String(d.getDate()).padStart(2,"0");
-const brDate = s => s.split("-").reverse().join("/");
-const sorted = l => l.slice().sort((a,b) => dt(a) - dt(b));
-/* agendadas primeiro (mais próximas no topo), depois canceladas, concluídas por último */
-const ORDEM = {agendada:0, cancelada:1, concluida:2};
-function sortedLista(l){
-  return l.slice().sort((a,b) => {
-    const ga = ORDEM[a.status] ?? 0, gb = ORDEM[b.status] ?? 0;
-    if(ga !== gb) return ga - gb;
-    return ga === 0 ? dt(a) - dt(b) : dt(b) - dt(a);
-  });
-}
-const personById = id => state.people.find(p => p.id === id);
-const teamById   = id => state.teams.find(t => t.id === id);
-const partById   = id => state.participants.find(p => p.id === id);
+    if (error) {
 
-function destName(m){
-  if(m.destinoTipo === "pessoa"){ const p = personById(m.destinoValor); return p ? p.nome : "Pessoa removida"; }
-  const t = teamById(m.destinoValor); return t ? t.nome : "Equipe removida";
-}
-function initials(nome){
-  return (nome||"?").trim().split(/\s+/).slice(0,2).map(w => w[0]).join("").toUpperCase();
-}
-function avatar(src, nome, cls){
-  return src
-    ? '<span class="avatar ' + (cls||"") + '"><img src="' + src + '" alt=""></span>'
-    : '<span class="avatar ' + (cls||"") + '">' + esc(initials(nome)) + "</span>";
-}
-function humanGap(ms){
-  const min = Math.round(ms/60000);
-  if(min < 1) return "agora";
-  if(min < 60) return min + " min";
-  const h = Math.floor(min/60), r = min%60;
-  if(h < 24) return h + " h" + (r ? " " + r + " min" : "");
-  const d = Math.floor(h/24);
-  return d + (d === 1 ? " dia" : " dias") + (h%24 ? " e " + (h%24) + " h" : "");
-}
-const longDate = d => DOWS[d.getDay()] + ", " + d.getDate() + " de " + MESES[d.getMonth()] + " de " + d.getFullYear();
-
-/* janelas nativas (confirm) são bloqueadas em página incorporada: confirmação própria */
-function confirmar(msg, okLabel){
-  return new Promise(res => {
-    const ov = document.createElement("div");
-    ov.className = "overlay";
-    ov.innerHTML = '<div class="modal" style="max-width:440px"><h2>Confirmar</h2>' +
-      '<p style="margin-top:14px">' + esc(msg) + "</p>" +
-      '<div class="cfg-actions" style="margin-top:22px">' +
-      '<button class="btn green" data-sim>' + esc(okLabel || "Confirmar") + "</button>" +
-      '<button class="btn ghost" data-nao>Voltar</button></div></div>';
-    const fim = v => { ov.remove(); res(v); };
-    ov.addEventListener("click", e => {
-      if(e.target === ov || e.target.closest("[data-nao]")) fim(false);
-      else if(e.target.closest("[data-sim]")) fim(true);
-    });
-    document.body.appendChild(ov);
-    const b = ov.querySelector("[data-sim]"); if(b && b.focus) b.focus();
-  });
-}
-async function ask(msg, okLabel){ return cfg().regras.confirmarExclusao ? confirmar(msg, okLabel) : true; }
-function toast(title, body, action){
-  const el = document.createElement("div");
-  el.className = "toast";
-  el.innerHTML = "<b>" + esc(title) + "</b><p>" + esc(body || "") + "</p>";
-  if(action){
-    const b = document.createElement("button");
-    b.className = "btn green small"; b.textContent = action.label;
-    b.onclick = () => { action.run(); el.remove(); };
-    el.appendChild(b);
-  }
-  $("#toasts").appendChild(el);
-  setTimeout(() => el.remove(), action ? 30000 : 7000);
-}
-
-/* ================= persistência ================= */
-function migrate(d){
-  if(!d) return null;
-  d.people=Array.isArray(d.people)?d.people:[];
-  d.participants=Array.isArray(d.participants)?d.participants:[];
-  d.teams=Array.isArray(d.teams)?d.teams:[];
-  d.meetings=Array.isArray(d.meetings)?d.meetings:[];
-  d.fired=Array.isArray(d.fired)?d.fired:[];
-  d.lixeira=Array.isArray(d.lixeira)?d.lixeira:[];
-  d.cfg=Object.assign(clone(DEFAULT_CFG),d.cfg||{});
-  d.cfg.cores=Object.assign(clone(DEFAULT_CFG.cores),d.cfg.cores||{});
-  d.cfg.regras=Object.assign(clone(DEFAULT_CFG.regras),d.cfg.regras||{});
-  d.cfg.rotulos=Object.assign(clone(DEFAULT_CFG.rotulos),d.cfg.rotulos||{});
-  d.cfg.menu=Object.assign(clone(DEFAULT_CFG.menu),d.cfg.menu||{});
-  if(!Array.isArray(d.cfg.lembretes)||!d.cfg.lembretes.length)d.cfg.lembretes=[60,30];
-  const teamMap=new Map(),personMap=new Map(),partMap=new Map();
-  d.teams=d.teams.map(t=>{const old=String(t.id||"");const id=isUUID(old)?old:uid();if(old&&old!==id)teamMap.set(old,id);return Object.assign({logo:"",descricao:"",info:"",ativo:true},t,{id});});
-  d.people=d.people.map(p=>{const old=String(p.id||"");const id=isUUID(old)?old:uid();if(old&&old!==id)personMap.set(old,id);return Object.assign({tipo:"especialista",nome:"",foto:"",cargo:"",email:"",info:"",ativo:true},p,{id});});
-  d.participants=d.participants.map(p=>{const old=String(p.id||"");const id=isUUID(old)?old:uid();if(old&&old!==id)partMap.set(old,id);return Object.assign({nome:"",cargo:"",email:"",role:"pessoa_comum",ativo:true,tema:{}},p,{id});});
-  if(d.v!==2){
-    const mapP={};
-    d.meetings.forEach(m=>{
-      if(m.destinoTipo==="especialista"){
-        const old=m.destinoValor;
-        if(!mapP[old]){const core=/core/i.test(old);const p={id:uid(),tipo:core?"juiz-core":"juiz-robo",nome:core?"Juiz de CORE":"Juiz de Robô (revisar)",foto:"",cargo:"",email:"",info:"Cadastro migrado da versão anterior."};d.people.push(p);mapP[old]=p.id;}
-        m.destinoTipo="pessoa";m.destinoValor=mapP[old];
-      }
-      m.participantes=(m.participantes||[]).map(n=>{if(typeof n!=="string")return n;let p=d.participants.find(x=>x.nome===n);if(!p){p={id:uid(),nome:n,cargo:"",email:"",role:"pessoa_comum",ativo:true};d.participants.push(p);}return p.id;});
-      m.registro=m.registro||{ajudamos:"",ajudados:""};
-    });
-    d.v=2;
-  }
-  d.meetings.forEach(m=>{m.id=isUUID(m.id)?m.id:uid();m.destinoValor=teamMap.get(String(m.destinoValor))||personMap.get(String(m.destinoValor))||m.destinoValor||null;m.participantes=(m.participantes||[]).map(id=>partMap.get(String(id))||id).filter(Boolean);m.registro=m.registro||{ajudamos:"",ajudados:""};m.status=m.status||"agendada";});
-  return d;
-}
-
-async function load(){
-  if(!hasStore) return;
-  try{
-    const r = await Store.get(KEY);
-    if(r && r.value){
-      const d = migrate(JSON.parse(r.value));
-      if(d && Array.isArray(d.teams) && Array.isArray(d.meetings)) state = d;
-    }
-  }catch(e){ /* primeira execução */ }
-}
-
-let dbBaseline={teams:[],people:[],participants:[],meetings:[]};
-let dbLoaded=false;
-function dbRows(ids,key){const set=new Set((ids||[]).map(String));return (dbBaseline[key]||[]).filter(x=>!set.has(String(x.id)));}
-async function readRows(label,builder){
-  try{
-    const r=await builder;
-    if(r.error){
-      mostrarErroSupabase("Tabela " + label, r.error);
-      return {data:[],error:r.error};
-    }
-    return {data:r.data||[],error:null};
-  }catch(e){
-    mostrarErroSupabase("Tabela " + label, e);
-    return {data:[],error:e};
-  }
-}
-async function carregarDadosSupabase(){
-  if(!sb){ setSupabaseStatus("err","Supabase indisponível"); return false; }
-  const nomes=["equipes","especialistas","juizes","participantes","reunioes","reuniao_participantes","reuniao_especialistas","reuniao_juizes","reuniao_equipes","configuracoes"];
-  const [eq,esp,jui,par,reu,rp,rs,rj,req,cfgRow]=await Promise.all([
-    readRows(nomes[0],sb.from("equipes").select("*").order("criado_em")),
-    readRows(nomes[1],sb.from("especialistas").select("*").order("criado_em")),
-    readRows(nomes[2],sb.from("juizes").select("*").order("criado_em")),
-    readRows(nomes[3],sb.from("participantes").select("id,nome,email,cargo,role,ativo,tema,criado_em,atualizado_em").order("criado_em")),
-    readRows(nomes[4],sb.from("reunioes").select("*").order("data_reuniao",{ascending:true})),
-    readRows(nomes[5],sb.from("reuniao_participantes").select("*")),
-    readRows(nomes[6],sb.from("reuniao_especialistas").select("*")),
-    readRows(nomes[7],sb.from("reuniao_juizes").select("*")),
-    readRows(nomes[8],sb.from("reuniao_equipes").select("*")),
-    readRows(nomes[9],sb.from("configuracoes").select("dados").eq("id","global").maybeSingle())
-  ]);
-  const errs=[eq,esp,jui,par,reu,rp,rs,rj,req,cfgRow].map((r,i)=>r.error?nomes[i]+": "+(r.error.message||"erro"):null).filter(Boolean);
-  const people=[];
-  (esp.data||[]).forEach(x=>people.push({id:x.id,tipo:"especialista",nome:x.nome||"",foto:x.foto||"",cargo:x.cargo||"",email:x.email||"",info:x.info||"",ativo:x.ativo!==false}));
-  (jui.data||[]).forEach(x=>people.push({id:x.id,tipo:x.tipo||"juiz-robo",nome:x.nome||"",foto:x.foto||"",cargo:x.cargo||"",email:x.email||"",info:x.info||"",ativo:x.ativo!==false}));
-  const rpBy=new Map(),rsBy=new Map(),rjBy=new Map(),reqBy=new Map();
-  (rp.data||[]).forEach(x=>{if(!rpBy.has(x.reuniao_id))rpBy.set(x.reuniao_id,[]);rpBy.get(x.reuniao_id).push(x.participante_id);});
-  (rs.data||[]).forEach(x=>{if(!rsBy.has(x.reuniao_id))rsBy.set(x.reuniao_id,[]);rsBy.get(x.reuniao_id).push(x.especialista_id);});
-  (rj.data||[]).forEach(x=>{if(!rjBy.has(x.reuniao_id))rjBy.set(x.reuniao_id,[]);rjBy.get(x.reuniao_id).push(x.juiz_id);});
-  (req.data||[]).forEach(x=>{if(!reqBy.has(x.reuniao_id))reqBy.set(x.reuniao_id,[]);reqBy.get(x.reuniao_id).push(x.equipe_id);});
-  const pm=new Map((par.data||[]).map(p=>[p.id,p]));
-  const meetings=(reu.data||[]).map(x=>{const spec=(rsBy.get(x.id)||[])[0],juiz=(rjBy.get(x.id)||[])[0],eqp=(reqBy.get(x.id)||[])[0],pid=spec||juiz||null,owner=pm.get(x.criado_por);return {id:x.id,nome:x.titulo||"",data:x.data_reuniao||"",hora:(x.hora_inicio||"").slice(0,5),destinoTipo:pid?"pessoa":(eqp?"equipe":null),destinoValor:pid||eqp||null,participantes:rpBy.get(x.id)||[],status:x.status||"agendada",criadoEm:x.criado_em?new Date(x.criado_em).getTime():Date.now(),criadoPor:x.criado_por?{id:x.criado_por,nome:(owner||{}).nome||"",email:(owner||{}).email||""}:null,registro:{ajudamos:x.registro_ajudamos||"",ajudados:x.registro_ajudados||""},descricao:x.descricao||"",local:x.local||"",observacoes:x.observacoes||""};}).filter(m=>m.destinoTipo&&m.destinoValor);
-  if(!eq.error)state.teams=(eq.data||[]).map(x=>({id:x.id,nome:x.nome||"",logo:x.logo||"",descricao:x.descricao||"",info:x.info||"",ativo:x.ativo!==false}));
-  if(!esp.error||!jui.error)state.people=people;
-  if(!par.error)state.participants=(par.data||[]).map(x=>({id:x.id,nome:x.nome||"",cargo:x.cargo||"",email:x.email||"",role:x.role||"pessoa_comum",ativo:x.ativo!==false,tema:(x.tema&&typeof x.tema==="object")?x.tema:{}}));
-  if(!reu.error&&!rs.error&&!rj.error&&!req.error&&!rp.error)state.meetings=meetings;
-  const cfgData=cfgRow.data&&cfgRow.data.dados;
-  if(!cfgRow.error&&cfgData&&typeof cfgData==="object"){state.cfg=Object.assign(clone(DEFAULT_CFG),state.cfg,cfgData);state.cfg.cores=Object.assign(clone(DEFAULT_CFG.cores),cfgData.cores||{});state.cfg.regras=Object.assign(clone(DEFAULT_CFG.regras),cfgData.regras||{});state.cfg.rotulos=Object.assign(clone(DEFAULT_CFG.rotulos),cfgData.rotulos||{});state.cfg.menu=Object.assign(clone(DEFAULT_CFG.menu),cfgData.menu||{});}
-  dbBaseline={teams:clone(state.teams),people:clone(state.people),participants:clone(state.participants),meetings:clone(state.meetings)};dbLoaded=true;try{await Store.set(KEY,JSON.stringify(state));}catch(e){}
-  setSupabaseStatus(errs.length?"warn":"ok",errs.length?"Supabase parcialmente conectado":"Supabase conectado");
-  if(errs.length)console.warn("GenMeet · leituras com erro",errs);
-  return true;
-}
-async function localSnapshot(){
-  try{ await Store.set(KEY, JSON.stringify(state)); statusSalvo(); }catch(e){ setSupabaseStatus("err","Não salvo"); }
-}
-async function tentarSupabase(label, fn){
-  try{
-    if(!sb){
-      setSupabaseStatus("err","Supabase indisponível");
-      throw new Error("Supabase não está disponível no navegador.");
-    }
-    const r=await fn();
-    if(r && r.error) throw r.error;
-    setSupabaseStatus("ok","Supabase conectado");
-    return true;
-  }catch(e){
-    console.warn("GenMeet · Supabase · "+label, e);
-    const msg=(e && e.message) ? e.message : String(e || "erro desconhecido");
-    setSupabaseStatus("err","Erro no Supabase");
-    try{ mostrarErroSupabase("Falha ao salvar " + label, e); }catch(_){}
-    throw new Error("Supabase: " + msg);
-  }
-}
-async function persistTeam(t){
-  await localSnapshot();
-  await tentarSupabase("equipe",()=>sb.from("equipes").upsert({id:t.id,nome:t.nome,descricao:t.descricao||"",logo:t.logo||null,info:t.info||null,ativo:t.ativo!==false},{onConflict:"id"}));
-  dbBaseline.teams=clone(state.teams); return true;
-}
-async function persistPerson(p,oldType){
-  await localSnapshot();
-  const table=p.tipo==="especialista"?"especialistas":"juizes";
-  const base={id:p.id,nome:p.nome,email:p.email||null,cargo:p.cargo||null,foto:p.foto||null,info:p.info||null,ativo:p.ativo!==false};
-  const payload=p.tipo==="especialista"?base:Object.assign(base,{tipo:p.tipo||"juiz-robo"});
-  const ok=await tentarSupabase("pessoa",async()=>{
-    let r=await sb.from(table).upsert(payload,{onConflict:"id"});
-    if(r.error && (String(r.error.message||"").includes("foto") || String(r.error.message||"").includes("info"))){
-      const fallback={id:p.id,nome:p.nome,email:p.email||null,cargo:p.cargo||null,ativo:p.ativo!==false};
-      if(p.tipo!=="especialista")fallback.tipo=p.tipo||"juiz-robo";
-      r=await sb.from(table).upsert(fallback,{onConflict:"id"});
-    }
-    if(r.error) throw r.error;
-    if(oldType&&oldType!==p.tipo){
-      const d=await sb.from(oldType==="especialista"?"especialistas":"juizes").delete().eq("id",p.id); if(d.error) throw d.error;
-    }
-    return r;
-  });
-  dbBaseline.people=clone(state.people); return true;
-}
-async function persistParticipant(p){
-  await localSnapshot();
-  await tentarSupabase("participante",()=>sb.from("participantes").upsert({id:p.id,nome:p.nome,email:p.email||null,cargo:p.cargo||null,role:p.role||"pessoa_comum",ativo:p.ativo!==false,tema:(p.tema&&typeof p.tema==="object")?p.tema:{}},{onConflict:"id"}));
-  dbBaseline.participants=clone(state.participants); return true;
-}
-async function persistMeeting(m){
-  if(!m||!isUUID(m.id)) throw new Error("A reunião possui um ID inválido.");
-  await localSnapshot();
-  await tentarSupabase("reunião",async()=>{
-    let r=await sb.from("reunioes").upsert({id:m.id,titulo:m.nome,descricao:m.descricao||null,data_reuniao:m.data,hora_inicio:m.hora||null,hora_fim:null,local:m.local||null,status:m.status||"agendada",observacoes:m.observacoes||null,criado_por:(m.criadoPor&&m.criadoPor.id)||null,registro_ajudamos:(m.registro&&m.registro.ajudamos)||null,registro_ajudados:(m.registro&&m.registro.ajudados)||null},{onConflict:"id"});
-    if(r.error) throw r.error;
-    r=await sb.from("reuniao_participantes").delete().eq("reuniao_id",m.id); if(r.error) throw r.error;
-    if(m.participantes&&m.participantes.length){
-      // Garante que cada participante escolhido exista no Supabase antes de criar o vínculo.
-      // Isso evita o erro de chave estrangeira em reuniao_participantes.
-      const ids=[...new Set(m.participantes.map(String))];
-      for(const pid of ids){
-        const local=state.participants.find(x=>String(x.id)===String(pid));
-        if(!local) throw new Error("O participante "+pid+" não foi encontrado no cadastro.");
-        let chk=await sb.from("participantes").select("id").eq("id",local.id).maybeSingle();
-        if(chk.error) throw chk.error;
-        if(!chk.data){
-          const ins=await sb.from("participantes").upsert({
-            id:local.id,
-            nome:local.nome||"",
-            email:local.email||null,
-            cargo:local.cargo||null,
-            role:local.role||"pessoa_comum",
-            ativo:local.ativo!==false,
-            tema:(local.tema&&typeof local.tema==="object")?local.tema:{}
-          },{onConflict:"id"});
-          if(ins.error) throw ins.error;
-        }
-      }
-      r=await sb.from("reuniao_participantes").upsert(
-        ids.map(pid=>({reuniao_id:m.id,participante_id:pid})),
-        {onConflict:"reuniao_id,participante_id"}
+      console.error(
+        "Erro ao procurar participante:",
+        error
       );
-      if(r.error)throw r.error;
+
+      return null;
     }
-    r=await sb.from("reuniao_especialistas").delete().eq("reuniao_id",m.id);if(r.error)throw r.error;
-    r=await sb.from("reuniao_juizes").delete().eq("reuniao_id",m.id);if(r.error)throw r.error;
-    r=await sb.from("reuniao_equipes").delete().eq("reuniao_id",m.id);if(r.error)throw r.error;
-    if(m.destinoTipo==="equipe"&&m.destinoValor){r=await sb.from("reuniao_equipes").insert({reuniao_id:m.id,equipe_id:m.destinoValor});}
-    else if(m.destinoTipo==="pessoa"&&m.destinoValor){const p=personById(m.destinoValor);if(!p)throw new Error("A pessoa escolhida não existe mais.");r=await sb.from(p.tipo==="especialista"?"reuniao_especialistas":"reuniao_juizes").insert({reuniao_id:m.id,[p.tipo==="especialista"?"especialista_id":"juiz_id"]:p.id});}
-    if(r&&r.error)throw r.error; return r;
-  });
-  dbBaseline.meetings=clone(state.meetings); return true;
-}
-async function deleteMeeting(m){
-  await localSnapshot();
-  return tentarSupabase("exclusão da reunião",()=>sb.from("reunioes").delete().eq("id",m.id));
-}
-async function deletePerson(p){
-  await localSnapshot();
-  return tentarSupabase("exclusão da pessoa",()=>sb.from(p.tipo==="especialista"?"especialistas":"juizes").delete().eq("id",p.id));
-}
-async function deleteTeam(t){
-  await localSnapshot();
-  return tentarSupabase("exclusão da equipe",()=>sb.from("equipes").delete().eq("id",t.id));
-}
-async function deleteParticipant(p){
-  await localSnapshot();
-  return tentarSupabase("exclusão do participante",()=>sb.from("participantes").delete().eq("id",p.id));
-}
-async function persistConfig(){
-  await localSnapshot();
-  await tentarSupabase("configurações",()=>sb.from("configuracoes").upsert({id:"global",dados:state.cfg,atualizado_por:null,atualizado_em:new Date().toISOString()},{onConflict:"id"}));
-  return true;
-}
-async function syncStateToSupabase(){
-  for(const t of state.teams) await persistTeam(t);
-  for(const p of state.people) await persistPerson(p);
-  for(const p of state.participants) await persistParticipant(p);
-  for(const m of state.meetings) await persistMeeting(m);
-  await persistConfig();
-  return true;
-}
-async function save(){
-  const errs=integrityErrors(state);
-  if(errs.length){toast("Salvamento bloqueado",errs[0]+" Corrija antes de continuar.");renderAlert(errs);return false;}
-  renderAlert([]);
-  await localSnapshot();
-  return true;
-}
 
-/* integridade: nenhuma reunião pode ter pessoa e equipe ao mesmo tempo */
-function integrityErrors(s){
-  const errs = [];
-  s.meetings.forEach(m => {
-    const temPessoa = m.destinoTipo === "pessoa" && !!m.destinoValor;
-    const temEquipe = m.destinoTipo === "equipe" && !!m.destinoValor;
-    if(m.pessoaId && m.equipeId) errs.push(m.nome + ": pessoa e equipe ao mesmo tempo.");
-    if(!temPessoa && !temEquipe) errs.push(m.nome + ": destino ausente ou inválido.");
-    if(temPessoa && !personById(m.destinoValor)) errs.push(m.nome + ": pessoa do destino não existe mais.");
-    if(temEquipe && !teamById(m.destinoValor))   errs.push(m.nome + ": equipe do destino não existe mais.");
-  });
-  return errs;
-}
-async function save(){
-  const errs = integrityErrors(state);
-  if(errs.length){
-    toast("Salvamento bloqueado", errs[0] + " Corrija antes de continuar.");
-    renderAlert(errs);
-    return false;
-  }
-  renderAlert([]);
-  try{
-    if(dbLoaded){
-      setSupabaseStatus('save','Salvando...');
-      await syncStateToSupabase();
-      await Store.set(KEY, JSON.stringify(state));
-      statusSalvo();
-    }else{
-      await Store.set(KEY, JSON.stringify(state));
-      statusSalvo();
+    return data ? data.id : null;
+  },
+
+
+  async validarParticipantes(supabase, ids) {
+
+    if (!Array.isArray(ids)) {
+      return [];
     }
-    return true;
-  }catch(e){
-    console.error('GenMeet · erro ao salvar',e);
-    setSupabaseStatus('err','Não salvo');
-    toast('Não foi possível salvar',e.message||'Verifique as permissões do Supabase.');
-    return false;
-  }
-}
 
-let syncTimer = null;
-function agendarSync(){
-  clearTimeout(syncTimer);
-  syncTimer = setTimeout(() => sincronizar(true), 1500);
-}
-function renderAlert(errs){
-  const box = $("#alert-box");
-  if(!box) return;
-  box.innerHTML = errs.length
-    ? '<div class="card" style="border-color:#8A6A12;margin-bottom:16px"><b>Dados inconsistentes</b><p class="hint">' +
-      errs.map(esc).join("<br>") + "</p></div>"
-    : "";
-}
+    const validos = [];
 
-/* mídia por reunião (fotos e documentos) */
-async function loadMedia(id){
-  if(!hasStore) return {fotos:[], docs:[]};
-  try{
-    const r = await Store.get(MEDIA(id));
-    return r && r.value ? JSON.parse(r.value) : {fotos:[], docs:[]};
-  }catch(e){ return {fotos:[], docs:[]}; }
-}
-async function saveMedia(id, m){
-  if(!hasStore) return false;
-  try{ await Store.set(MEDIA(id), JSON.stringify(m)); return true; }
-  catch(e){ avisoArmazenamento(true); toast("Não foi possível gravar o arquivo", "Ele vale nesta sessão. Se for muito grande, use uma imagem menor."); return false; }
-}
-async function dropMedia(id){
-  if(!hasStore) return;
-  try{ await Store.delete(MEDIA(id)); }catch(e){}
-}
+    for (const item of ids) {
 
-/* leitura e compressão de arquivos */
-function readFile(file){
-  return new Promise((res, rej) => {
-    const r = new FileReader();
-    r.onload = () => res(r.result);
-    r.onerror = () => rej(new Error("falha"));
-    r.readAsDataURL(file);
-  });
-}
-function shrink(dataUrl, max, quality){
-  return new Promise(res => {
-    const img = new Image();
-    img.onload = () => {
-      const s = Math.min(1, max/Math.max(img.width, img.height));
-      const c = document.createElement("canvas");
-      c.width = Math.round(img.width*s); c.height = Math.round(img.height*s);
-      c.getContext("2d").drawImage(img, 0, 0, c.width, c.height);
-      res(c.toDataURL("image/jpeg", quality || .8));
-    };
-    img.onerror = () => res(dataUrl);
-    img.src = dataUrl;
-  });
-}
+      let id = item;
 
-/* ================= navegação ================= */
-const CONFIG_PASSWORD = "123456";
-let configUnlocked = sessionStorage.getItem("genmeet:configUnlocked") === "1";
-function pedirSenhaConfiguracoes(){
-  openModal(
-    '<h2>Configurações protegidas</h2>' +
-    '<p class="hint" style="margin-top:8px">Digite a senha para acessar as configurações do GenMeet.</p>' +
-    '<div class="form" style="margin-top:18px">' +
-      '<div class="field"><label for="cfg-password">Senha</label><input class="input" id="cfg-password" type="password" autocomplete="current-password"></div>' +
-      '<div class="form-actions"><button class="btn green" id="cfg-password-ok">Entrar nas configurações</button><button class="btn ghost" id="cfg-password-cancel">Cancelar</button></div>' +
-    '</div>',
-    ov => {
-      const input = ov.querySelector("#cfg-password");
-      const entrar = () => {
-        if(input.value !== CONFIG_PASSWORD){
-          input.classList.add("err");
-          toast("Senha incorreta", "Acesso às configurações não autorizado.");
-          input.focus();
-          return;
-        }
-        configUnlocked = true;
-        sessionStorage.setItem("genmeet:configUnlocked", "1");
-        closeModal();
-        go("config");
-      };
-      ov.querySelector("#cfg-password-ok").onclick = entrar;
-      ov.querySelector("#cfg-password-cancel").onclick = closeModal;
-      input.addEventListener("keydown", e => { if(e.key === "Enter") entrar(); });
-      setTimeout(() => input.focus(), 0);
-    }, "460px"
-  );
-}
-function go(v){
-  if(v === "config" && !configUnlocked){
-    pedirSenhaConfiguracoes();
-    return;
-  }
-  $$("#nav button").forEach(b => b.classList.toggle("on", b.dataset.v === v));
-  $$(".view").forEach(s => s.classList.toggle("on", s.id === "v-" + v));
-  window.scrollTo({top:0});
-  if(v === "painel") renderPainel();
-  if(v === "nova") renderPickers();
-  if(v === "reunioes") renderList();
-  if(v === "agenda") renderCal();
-  if(v === "equipes") renderTeams();
-  if(v === "especialistas" || v === "juizes") renderPeople();
-  if(v === "participantes") renderParts();
-  if(v === "config") renderConfig();
-}
-$("#nav").addEventListener("click", e => {
-  const b = e.target.closest("button[data-v]"); if(b) go(b.dataset.v);
-});
-document.addEventListener("click", e => {
-  const b = e.target.closest("[data-go]");
-  if(b){ if(b.dataset.go === "nova") resetForm(); go(b.dataset.go); }
-});
+      if (
+        item &&
+        typeof item === "object"
+      ) {
 
-/* ================= modal ================= */
-function openModal(html, onMount, width){
-  closeModal();
-  const ov = document.createElement("div");
-  ov.className = "overlay";
-  ov.innerHTML = '<div class="modal" style="' + (width ? "max-width:" + width : "") + '">' +
-    '<button class="modal-close" aria-label="Fechar">×</button>' + html + "</div>";
-  ov.addEventListener("mousedown", e => { if(e.target === ov) closeModal(); });
-  ov.querySelector(".modal-close").onclick = closeModal;
-  $("#modal-root").appendChild(ov);
-  document.body.style.overflow = "hidden";
-  if(onMount) onMount(ov);
-}
-function closeModal(){
-  $("#modal-root").innerHTML = "";
-  document.body.style.overflow = "";
-}
-document.addEventListener("keydown", e => { if(e.key === "Escape") closeModal(); });
-
-/* ================= painel ================= */
-function renderPainel(){
-  renderAlert(integrityErrors(state));
-  const now = new Date();
-  const futuras = sorted(state.meetings.filter(m => m.status === "agendada" && dt(m) > now));
-  const next = futuras[0];
-
-  if(!next){
-    $("#hero").innerHTML = '<div class="empty" style="margin-bottom:18px"><strong>Nenhuma reunião no horizonte</strong>' +
-      'Assim que você agendar, o painel mostra a contagem e os avisos.' +
-      '<div style="margin-top:14px"><button class="btn green" data-go="nova">Agendar reunião</button></div></div>';
-  }else{
-    const start = dt(next);
-    const avisos = reminders().map(r => {
-      const at = start.getTime() - r.min*60000;
-      const done = now.getTime() >= at;
-      const hora = new Date(at).toTimeString().slice(0,5);
-      return '<span class="aviso ' + (done ? "done" : "") + '"><i></i>' + r.rot +
-        ' <small>' + (done ? "enviado" : "às " + hora) + "</small></span>";
-    }).join("");
-    $("#hero").innerHTML =
-      '<div class="hero"><div class="hero-top"><div>' +
-        '<div class="hero-label">Próxima reunião</div><h2>' + esc(next.nome) + "</h2>" +
-        '<div class="hero-when">' + longDate(start) + " · " + next.hora + "</div>" +
-        '<div style="margin-top:10px">' + badge(next) + "</div></div>" +
-        '<div class="count"><b>' + humanGap(start - now) + "</b><span>até começar</span></div></div>" +
-      '<div class="avisos"><span class="hero-label" style="width:100%;margin:0">Avisos programados</span>' + avisos + "</div></div>";
-  }
-
-  const semana = futuras.filter(m => dt(m) - now < 7*864e5).length;
-  $("#stats").innerHTML =
-    stat(state.meetings.length, "reuniões registradas", "") +
-    stat(state.meetings.filter(m => m.destinoTipo === "pessoa").length, "com pessoas", "b") +
-    stat(state.meetings.filter(m => m.destinoTipo === "equipe").length, "com equipes", "g") +
-    stat(semana, "nos próximos 7 dias", "b");
-
-  const up = futuras.slice(0,5);
-  $("#upcoming").innerHTML = up.length ? up.map(row).join("") :
-    '<div class="empty"><strong>Agenda livre</strong>Nada agendado a partir de agora.</div>';
-}
-const stat = (n, label, cls) => '<div class="stat ' + cls + '"><b>' + n + "</b><span>" + label + "</span></div>";
-
-function badge(m){
-  if(m.destinoTipo === "pessoa"){
-    const p = personById(m.destinoValor);
-    return '<span class="badge pes">' + (p ? tipoIcon(p.tipo) : "👤") + " " + esc(destName(m)) +
-      (p ? " · " + esc(tipoLabel(p.tipo)) : "") + "</span>";
-  }
-  return '<span class="badge eq">👥 ' + esc(destName(m)) + "</span>";
-}
-
-/* ================= linha de reunião ================= */
-function row(m){
-  const d = dt(m);
-  const nomes = m.participantes.map(id => (partById(id) || {nome:"—"}).nome);
-  return '<article class="row ' + (m.destinoTipo === "equipe" ? "eq " : "") + m.status + '">' +
-    '<div class="when"><b>' + d.getDate() + "</b><span>" + MES3[d.getMonth()] + '</span><em>' + m.hora + "</em></div>" +
-    '<div class="row-main"><h4>' + esc(m.nome) + '</h4><div class="meta">' + badge(m) +
-      '<span class="badge st-' + m.status + '">' + ({agendada:"Agendada",concluida:"Concluída",cancelada:"Cancelada"})[m.status] + "</span>" +
-      "<span>" + nomes.length + (nomes.length === 1 ? " participante" : " participantes") + "</span>" +
-      "<span>" + esc(nomes.join(", ")) + "</span>" +
-      (m.criadoPor ? "<span>criada por " + esc(m.criadoPor.nome) + "</span>" : "") + "</div></div>" +
-    '<div class="row-acts">' +
-      '<button class="btn ghost small" data-act="detalhes" data-id="' + m.id + '">Detalhes</button>' +
-      (m.status === "agendada" ? '<button class="btn green small" data-act="concluir" data-id="' + m.id + '">Concluir</button>' : "") +
-      '<button class="btn ghost small" data-act="editar" data-id="' + m.id + '">Editar</button>' +
-      (m.status === "cancelada"
-        ? '<button class="btn ghost small" data-act="reabrir" data-id="' + m.id + '">Reabrir</button>'
-        : '<button class="btn ghost small" data-act="cancelar" data-id="' + m.id + '">Cancelar</button>') +
-      '<button class="btn ghost small" data-act="excluir" data-id="' + m.id + '">Excluir</button>' +
-    "</div></article>";
-}
-
-document.addEventListener("click", async e => {
-  const b = e.target.closest("[data-act]"); if(!b) return;
-  const m = state.meetings.find(x => x.id === b.dataset.id); if(!m) return;
-  const a = b.dataset.act;
-  if(a === "detalhes"){ openDetalhes(m.id); return; }
-  if(a === "editar"){ loadForm(m); go("nova"); return; }
-  let concluida = false;
-  if(a === "concluir"){
-    if(!await ask("Concluir a reunião \"" + m.nome + "\"?")) return;
-    m.status = "concluida"; concluida = true;
-  }
-  if(a === "cancelar"){ if(!await ask("Cancelar a reunião \"" + m.nome + "\"?")) return; m.status = "cancelada"; }
-  if(a === "reabrir") m.status = "agendada";
-  touch(m);
-  if(a === "excluir"){
-    if(!await ask("Excluir a reunião \"" + m.nome + "\"? Registro, fotos e documentos vão junto.")) return;
-    state.meetings = state.meetings.filter(x => x.id !== m.id);
-    state.lixeira.push({id:m.id, upd:Date.now()});
-    await dropMedia(m.id);
-    try{ await deleteMeeting(m); }catch(err){}
-    await save();
-    toast("Reunião excluída", m.nome);
-    renderAll();
-    return;
-  }
-  try{ await persistMeeting(m); }catch(err){ toast("Não foi possível salvar a reunião",err.message||"Verifique o Supabase."); return; }
-  renderAll();
-  if(concluida){
-    toast("Reunião concluída", "Agora registre o que foi tratado e anexe fotos ou documentos.");
-    openDetalhes(m.id, "registro");
-  }
-});
-
-/* ================= detalhes da reunião ================= */
-async function openDetalhes(id){
-  const m = state.meetings.find(x => x.id === id); if(!m) return;
-  const media = await loadMedia(id);
-  const p = m.destinoTipo === "pessoa" ? personById(m.destinoValor) : null;
-  const t = m.destinoTipo === "equipe" ? teamById(m.destinoValor) : null;
-  const nomes = m.participantes.map(x => (partById(x) || {nome:"—"}).nome).join(", ");
-  const concl = m.status === "concluida";
-
-  openModal(
-    "<h2>" + esc(m.nome) + "</h2>" +
-    '<div style="margin-top:10px">' + badge(m) + ' <span class="badge st-' + m.status + '">' +
-      ({agendada:"Agendada",concluida:"Concluída",cancelada:"Cancelada"})[m.status] + "</span></div>" +
-    '<dl class="kv"><dt>Data</dt><dd>' + brDate(m.data) + "</dd>" +
-      "<dt>Hora</dt><dd>" + m.hora + "</dd>" +
-      "<dt>Destino</dt><dd>" + (p ? esc(p.nome) + " · " + esc(tipoLabel(p.tipo)) + (p.cargo ? " · " + esc(p.cargo) : "") +
-        (p.email ? "<br>" + esc(p.email) : "") : esc(t ? t.nome : "—") + (t && t.descricao ? "<br>" + esc(t.descricao) : "")) + "</dd>" +
-      "<dt>Participantes</dt><dd>" + esc(nomes || "—") + "</dd>" +
-      (m.criadoPor ? "<dt>Criada por</dt><dd>" + esc(m.criadoPor.nome) + " · " + esc(m.criadoPor.email || "") + "</dd>" : "") + "</dl>" +
-
-    '<div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:18px">' +
-      '<button class="btn green small" id="d-teste">Testar aviso agora</button></div>' +
-
-    '<div class="modal-sec"><h3>Registro</h3>' +
-      (concl ? "" : '<p class="hint" style="margin-bottom:10px">O registro fica disponível depois de concluir a reunião.</p>') +
-      '<div class="field"><label for="r-a">O que ajudamos?</label>' +
-        '<textarea class="input" id="r-a" ' + (concl ? "" : "disabled") + ">" + esc(m.registro.ajudamos) + "</textarea></div>" +
-      '<div class="field" style="margin-top:12px"><label for="r-b">O que fomos ajudados?</label>' +
-        '<textarea class="input" id="r-b" ' + (concl ? "" : "disabled") + ">" + esc(m.registro.ajudados) + "</textarea></div>" +
-      (concl ? '<div style="margin-top:12px"><button class="btn green small" id="r-save">Salvar registro</button></div>' : "") +
-    "</div>" +
-
-    '<div class="modal-sec"><h3>Fotos</h3>' +
-      '<input type="file" id="f-fotos" accept="image/*" multiple class="input" style="padding:8px">' +
-      '<div class="thumbs" id="thumbs"></div></div>' +
-
-    '<div class="modal-sec"><h3>Documentos</h3>' +
-      '<input type="file" id="f-docs" multiple class="input" style="padding:8px">' +
-      '<div id="docs"></div></div>',
-
-    ov => {
-      const drawFotos = () => {
-        $("#thumbs").innerHTML = media.fotos.length ? media.fotos.map(f =>
-          '<div class="thumb"><img src="' + f.dataUrl + '" alt=""><button data-foto="' + f.id + '">excluir</button></div>').join("")
-          : '<p class="hint">Nenhuma foto vinculada.</p>';
-      };
-      const drawDocs = () => {
-        $("#docs").innerHTML = media.docs.length ? media.docs.map(d =>
-          '<div class="doc"><span class="ic">' + docIcon(d) + '</span><div class="info"><b>' + esc(d.nome) +
-          "</b><span>" + esc(docKind(d)) + '</span></div><div class="acts">' +
-          '<button class="btn ghost small" data-open="' + d.id + '">Abrir</button> ' +
-          '<button class="btn ghost small" data-doc="' + d.id + '">Excluir</button></div></div>').join("")
-          : '<p class="hint">Nenhum documento vinculado.</p>';
-      };
-      drawFotos(); drawDocs();
-
-      ov.querySelector("#d-teste").onclick = () => { closeModal(); dispararAviso(m, "1 hora antes", true); };
-
-      const rs = ov.querySelector("#r-save");
-      if(rs) rs.onclick = async () => {
-        m.registro = {ajudamos: ov.querySelector("#r-a").value.trim(), ajudados: ov.querySelector("#r-b").value.trim()};
-        touch(m);
-        try{ await persistMeeting(m); toast("Registro salvo", m.nome); }catch(err){ toast("Não foi possível salvar o registro",err.message||"Verifique o Supabase."); }
-      };
-
-      ov.querySelector("#f-fotos").onchange = async ev => {
-        for(const file of Array.from(ev.target.files)){
-          const raw = await readFile(file);
-          media.fotos.push({id:uid(), nome:file.name, dataUrl: await shrink(raw, 1100, .78)});
-        }
-        ev.target.value = "";
-        if(await saveMedia(id, media)) toast("Fotos adicionadas", m.nome);
-        drawFotos();
-      };
-      ov.querySelector("#f-docs").onchange = async ev => {
-        for(const file of Array.from(ev.target.files)){
-          if(file.size > 3.5*1024*1024){ toast("Arquivo muito grande", file.name + " passa de 3,5 MB."); continue; }
-          media.docs.push({id:uid(), nome:file.name, mime:file.type, dataUrl: await readFile(file)});
-        }
-        ev.target.value = "";
-        if(await saveMedia(id, media)) toast("Documentos anexados", m.nome);
-        drawDocs();
-      };
-      ov.addEventListener("click", async ev => {
-        const fb = ev.target.closest("[data-foto]");
-        const db = ev.target.closest("[data-doc]");
-        const ob = ev.target.closest("[data-open]");
-        if(fb){ media.fotos = media.fotos.filter(f => f.id !== fb.dataset.foto); await saveMedia(id, media); drawFotos(); }
-        if(db){ media.docs = media.docs.filter(d => d.id !== db.dataset.doc); await saveMedia(id, media); drawDocs(); }
-        if(ob){
-          const d = media.docs.find(x => x.id === ob.dataset.open);
-          if(d) baixar(d.dataUrl, d.nome);
-        }
-      });
-    }, "760px");
-}
-function docKind(d){
-  const e = (d.nome.split(".").pop() || "").toUpperCase();
-  const map = {PDF:"PDF", DOC:"Word", DOCX:"Word", XLS:"Excel", XLSX:"Excel", CSV:"Planilha",
-    PPT:"PowerPoint", PPTX:"PowerPoint", PNG:"Imagem", JPG:"Imagem", JPEG:"Imagem", WEBP:"Imagem", GIF:"Imagem"};
-  return map[e] || (e ? "Arquivo " + e : "Arquivo");
-}
-function docIcon(d){
-  const k = docKind(d);
-  return ({PDF:"📕", Word:"📘", Excel:"📗", Planilha:"📗", PowerPoint:"📙", Imagem:"🖼️"})[k] || "📄";
-}
-function baixar(dataUrl, nome){
-  const a = document.createElement("a");
-  a.href = dataUrl; a.download = nome; document.body.appendChild(a); a.click(); a.remove();
-}
-
-/* ================= avisos na tela ================= */
-/* O GenMeet não envia e-mail. Os lembretes aparecem como aviso dentro do site
-   e, se você autorizar, como notificação do navegador. */
-function dispararAviso(m, rot, teste){
-  const quem = (m.destinoTipo === "pessoa" ? "\u{1F464} " : "\u{1F465} ") + destName(m);
-  const titulo = (teste ? "Teste \u00b7 " : "Lembrete \u00b7 ") + rot;
-  const nomes = m.participantes.map(id => (partById(id) || {nome:"\u2014"}).nome).join(", ");
-  toast(titulo, m.nome + " \u00e0s " + m.hora + " \u00b7 " + quem + (nomes ? " \u00b7 " + nomes : ""));
-  try{
-    if(cfg().notificacoes && window.Notification && Notification.permission === "granted")
-      new Notification(cfg().nome + " \u00b7 " + rot, {body: m.nome + " \u00e0s " + m.hora + " \u2014 " + quem});
-  }catch(e){}
-}
-
-/* ================= criadores das reuniões ================= */
-const CRIADORES_REUNIAO = [
-  "Amanda Coradi",
-  "Ana Beatriz",
-  "Bianca Guimarães",
-  "Cauã Lima",
-  "Julia Faustino",
-  "Eyck Sarmento",
-  "Heitor Batista",
-  "Sophia de Mattos",
-  "Sophia de Campos",
-  "Ryan Brugnetti",
-  "Luis Guilherme"
-];
-function renderCriadores(){
-  const sel = $("#f-criador");
-  if(!sel) return;
-  const atual = sel.value;
-  sel.innerHTML = '<option value="">Selecione quem criou a reunião</option>' +
-    CRIADORES_REUNIAO.map(nome => '<option value="' + esc(nome) + '">' + esc(nome) + '</option>').join("");
-  sel.value = atual;
-}
-function creatorByName(nome){
-  return state.participants.find(p => p.role === "criador_reuniao" && p.nome === nome) ||
-         state.participants.find(p => p.nome === nome);
-}
-async function garantirCriadores(){
-  for(const nome of CRIADORES_REUNIAO){
-    let p = creatorByName(nome);
-    if(p) continue;
-    p = touch({id:uid(),nome,cargo:"",email:"",role:"criador_reuniao",ativo:true,tema:{}});
-    state.participants.push(p);
-    try{ await persistParticipant(p); }catch(e){ console.warn("GenMeet · não foi possível registrar criador",nome,e); }
-  }
-}
-
-/* ================= formulário de reunião ================= */
-function resetForm(){
-  editingId = null; selParts = []; destino = null; destValor = null; tipoSel = "especialista";
-  $("#form").reset();
-  $("#form-title").textContent = "Nova reunião";
-  $("#f-criador").value = "";
-  $("#save-btn").textContent = "Salvar reunião";
-  $("#cancel-edit").style.display = "none";
-  renderPickers(); renderChips(); clearErrors();
-}
-function loadForm(m){
-  editingId = m.id;
-  $("#f-nome").value = m.nome; $("#f-data").value = m.data; $("#f-hora").value = m.hora;
-  renderCriadores();
-  $("#f-criador").value = m.criadoPor && m.criadoPor.nome ? m.criadoPor.nome : "";
-  destino = m.destinoTipo; destValor = m.destinoValor;
-  if(destino === "pessoa"){ const p = personById(m.destinoValor); if(p) tipoSel = p.tipo; }
-  selParts = m.participantes.slice();
-  $("#form-title").textContent = "Editar reunião";
-  $("#save-btn").textContent = "Salvar alterações";
-  $("#cancel-edit").style.display = "inline-flex";
-  renderPickers(); renderChips(); clearErrors();
-}
-$("#cancel-edit").addEventListener("click", () => { resetForm(); go("reunioes"); });
-
-function renderPickers(){
-  renderCriadores();
-  $$(".dest-opt").forEach(o => {
-    const k = o.dataset.k;
-    o.classList.toggle("sel", destino === k);
-    o.classList.toggle("locked", destino !== null && destino !== k);
-  });
-  $("#pick-pes").classList.toggle("on", destino === "pessoa");
-  $("#pick-eq").classList.toggle("on", destino === "equipe");
-  $("#dest-note").textContent = destino
-    ? "Destino travado em " + (destino === "pessoa" ? "pessoa" : "equipe") + ". Clique de novo no cartão para trocar."
-    : "Escolha um dos dois. Ao selecionar, o outro fica bloqueado.";
-
-  $("#tipo-chips").innerHTML = TIPOS.map(t =>
-    '<button type="button" class="tchip ' + (tipoSel === t.k ? "on" : "") + '" data-tipo="' + t.k + '">' +
-    t.icon + " " + t.label + "</button>").join("");
-
-  const pessoas = state.people.filter(p => p.tipo === tipoSel);
-  $("#people-pick").innerHTML = pessoas.map(p =>
-    '<button type="button" class="pcard ' + (destValor === p.id ? "sel" : "") + '" data-pessoa="' + p.id + '">' +
-    avatar(p.foto, p.nome) + '<span class="info"><b>' + esc(p.nome) + "</b>" +
-    "<span>" + esc(p.cargo || tipoLabel(p.tipo)) + "</span>" +
-    "<span>" + esc(p.email || "sem e-mail") + "</span></span></button>").join("") +
-    '<button type="button" class="pcard add" data-nova-pessoa="1"><span class="avatar">＋</span>' +
-    '<span class="info"><b>Cadastrar ' + esc(tipoLabel(tipoSel)) + "</b>" +
-    "<span>" + (pessoas.length ? "sem sair desta tela" : "nenhum cadastrado ainda") + "</span></span></button>";
-
-  $("#team-pick").innerHTML = state.teams.map(t =>
-    '<button type="button" class="pcard ' + (destValor === t.id ? "sel" : "") + '" data-equipe="' + t.id + '">' +
-    avatar(t.logo, t.nome) + '<span class="info"><b>' + esc(t.nome) + "</b>" +
-    "<span>" + esc(t.descricao || "sem descrição") + "</span></span></button>").join("") +
-    '<button type="button" class="pcard add" data-nova-equipe="1"><span class="avatar">＋</span>' +
-    '<span class="info"><b>Cadastrar equipe</b>' +
-    "<span>" + (state.teams.length ? "sem sair desta tela" : "nenhuma cadastrada ainda") + "</span></span></button>";
-
-  const livres = state.participants.filter(p => p.role !== "criador_reuniao" && !selParts.includes(p.id));
-  $("#f-part").innerHTML = livres.length
-    ? '<option value="">Selecione um participante</option>' +
-      livres.map(p => '<option value="' + p.id + '">' + esc(p.nome) + (p.cargo ? " — " + esc(p.cargo) : "") + "</option>").join("")
-    : '<option value="">' + (state.participants.length ? "Todos já adicionados" : "Cadastre participantes primeiro") + "</option>";
-}
-$$(".dest-opt").forEach(o => o.addEventListener("click", () => {
-  const k = o.dataset.k;
-  if(destino === k){ destino = null; destValor = null; }
-  else { destino = k; destValor = null; }
-  renderPickers();
-}));
-$("#tipo-chips").addEventListener("click", e => {
-  const b = e.target.closest("[data-tipo]");
-  if(b){ tipoSel = b.dataset.tipo; destValor = null; renderPickers(); }
-});
-$("#people-pick").addEventListener("click", e => {
-  if(e.target.closest("[data-nova-pessoa]")){
-    personModal(null, tipoSel, id => {
-      const p = personById(id);
-      if(p){ tipoSel = p.tipo; destino = "pessoa"; destValor = p.id; }
-      renderPickers();
-    });
-    return;
-  }
-  const b = e.target.closest("[data-pessoa]");
-  if(b){ destino = "pessoa"; destValor = b.dataset.pessoa; renderPickers(); }
-});
-$("#team-pick").addEventListener("click", e => {
-  if(e.target.closest("[data-nova-equipe]")){
-    teamModal(null, id => { destino = "equipe"; destValor = id; renderPickers(); });
-    return;
-  }
-  const b = e.target.closest("[data-equipe]");
-  if(b){ destino = "equipe"; destValor = b.dataset.equipe; renderPickers(); }
-});
-$("#new-part-inline").addEventListener("click", () => {
-  partModal(null, id => {
-    if(!selParts.includes(id)) selParts.push(id);
-    renderChips(); renderPickers();
-  });
-});
-function renderChips(){
-  $("#chips").innerHTML = selParts.map(id => {
-    const p = partById(id) || {nome:"—"};
-    return '<span class="chip">' + esc(p.nome) + '<button type="button" data-rm="' + id + '" aria-label="Remover">×</button></span>';
-  }).join("");
-}
-$("#chips").addEventListener("click", e => {
-  const b = e.target.closest("[data-rm]");
-  if(b){ selParts = selParts.filter(x => x !== b.dataset.rm); renderChips(); renderPickers(); }
-});
-$("#add-part").addEventListener("click", () => {
-  const v = $("#f-part").value;
-  if(!v){
-    if(!state.participants.length) toast("Nenhum participante cadastrado", "Use \"+ Cadastrar participante\" ao lado.");
-    return;
-  }
-  if(!selParts.includes(v)) selParts.push(v);
-  renderChips(); renderPickers();
-});
-
-function clearErrors(){ $$(".err-msg").forEach(x => x.classList.remove("on")); $$(".input").forEach(i => i.classList.remove("err")); }
-function fail(id, field, msg){
-  const e = $("#e-" + id); if(msg) e.textContent = msg; e.classList.add("on");
-  if(field) $(field).classList.add("err");
-}
-
-let salvando = false;
-async function salvarReuniao(ev){
-  if(ev) ev.preventDefault();
-  if(salvando) return;
-  salvando = true;
-  try{ await salvarReuniaoInterno(); }
-  catch(err){
-    console.error("GenMeet · falha ao salvar:", err);
-    toast("Erro ao salvar", (err && err.message ? err.message : String(err)) + " — avise que apareceu esta mensagem.");
-  }
-  finally{ salvando = false; }
-}
-async function salvarReuniaoInterno(){
-  clearErrors();
-  const nome = $("#f-nome").value.trim(), data = $("#f-data").value, hora = $("#f-hora").value, criadorNome = $("#f-criador").value;
-  let ok = true;
-  const faltando = [];
-
-  if(!nome){ fail("nome","#f-nome"); faltando.push("nome da reunião"); ok = false; }
-  if(!data){ fail("data","#f-data"); faltando.push("data"); ok = false; }
-  else if(cfg().regras.bloquearPassado && data < iso(new Date())){
-    fail("data","#f-data","A data não pode ser anterior a hoje."); faltando.push("data válida (hoje ou depois)"); ok = false; }
-  if(!hora){ fail("hora","#f-hora"); faltando.push("hora"); ok = false; }
-  if(!criadorNome){ fail("criador","#f-criador"); faltando.push("quem criou a reunião"); ok = false; }
-
-  if(!destino){ fail("dest", null, "Escolha o destino: pessoa ou equipe."); faltando.push("destino (pessoa ou equipe)"); ok = false; }
-  else if(!destValor){ fail("dest", null, destino === "pessoa" ? "Selecione a pessoa." : "Selecione a equipe.");
-    faltando.push(destino === "pessoa" ? "selecionar a pessoa" : "selecionar a equipe"); ok = false; }
-  else if(destino === "pessoa" && !personById(destValor)){ fail("dest", null, "Pessoa inválida. Selecione novamente."); faltando.push("pessoa válida"); ok = false; }
-  else if(destino === "equipe" && !teamById(destValor)){ fail("dest", null, "Equipe inválida. Selecione novamente."); faltando.push("equipe válida"); ok = false; }
-  if(cfg().regras.participantesObrig && !selParts.length){ fail("part","#f-part"); faltando.push("ao menos um participante"); ok = false; }
-  if(!ok){
-    toast("Falta preencher", faltando.join(" · "));
-    const primeiroErro = $(".err-msg.on");
-    if(primeiroErro && primeiroErro.scrollIntoView) primeiroErro.scrollIntoView({block:"center"});
-    return;
-  }
-
-  const criador = creatorByName(criadorNome);
-  if(!criador){ fail("criador","#f-criador","Selecione um nome válido da lista."); toast("Falta preencher","Escolha quem criou a reunião."); return; }
-  const payload = {nome, data, hora, destinoTipo: destino, destinoValor: destValor, participantes: selParts.slice(),
-    criadoPor: {id: criador.id, nome: criador.nome, email: criador.email || ""}};
-  let alvo;
-  if(editingId){
-    alvo = state.meetings.find(x => x.id === editingId);
-    const mudouHorario = alvo.data !== data || alvo.hora !== hora;
-    Object.assign(alvo, payload);
-    delete alvo.pessoaId; delete alvo.equipeId;
-    if(mudouHorario) state.fired = state.fired.filter(f => !f.startsWith(editingId + ":"));
-    touch(alvo);
-    toast("Reunião atualizada", nome + (mudouHorario ? " · avisos reagendados" : ""));
-  }else{
-    alvo = Object.assign({id:uid(), status:"agendada", criadoEm:Date.now(), registro:{ajudamos:"",ajudados:""},
-      criadoPor: null}, payload);
-    touch(alvo);
-    state.meetings.push(alvo);
-    toast("Reunião salva", nome + " · avisos em 1 h e 30 min antes.");
-  }
-  try{ await persistMeeting(alvo); }catch(err){ if(!editingId) state.meetings=state.meetings.filter(x=>x.id!==alvo.id); toast("Não foi possível salvar a reunião",err.message||"Verifique o Supabase."); return; }
-  resetForm(); renderAll(); go("reunioes");
-}
-$("#save-btn").addEventListener("click", salvarReuniao);
-$("#form").addEventListener("submit", salvarReuniao);
-
-/* ================= lista e filtros ================= */
-function fillQuem(){
-  const sel = $("#f-quem"), cur = sel.value;
-  let html = '<option value="">Todos</option>';
-  TIPOS.forEach(t => {
-    const pes = state.people.filter(p => p.tipo === t.k);
-    if(pes.length) html += '<optgroup label="' + t.label + '">' +
-      pes.map(p => '<option value="p:' + p.id + '">' + esc(p.nome) + "</option>").join("") + "</optgroup>";
-  });
-  if(state.teams.length) html += '<optgroup label="Equipes">' +
-    state.teams.map(t => '<option value="e:' + t.id + '">' + esc(t.nome) + "</option>").join("") + "</optgroup>";
-  sel.innerHTML = html; sel.value = cur;
-}
-function filtered(){
-  const q = $("#q").value.trim().toLowerCase();
-  const fd = $("#f-dest").value, fq = $("#f-quem").value, fs = $("#f-status").value;
-  return sortedLista(state.meetings.filter(m => {
-    if(fd && m.destinoTipo !== fd) return false;
-    if(fs && m.status !== fs) return false;
-    if(fq){
-      const k = fq.slice(0,1), v = fq.slice(2);
-      if(k === "p" && !(m.destinoTipo === "pessoa" && m.destinoValor === v)) return false;
-      if(k === "e" && !(m.destinoTipo === "equipe" && m.destinoValor === v)) return false;
-    }
-    if(q){
-      const p = m.destinoTipo === "pessoa" ? personById(m.destinoValor) : null;
-      const hay = [m.nome, destName(m), p ? tipoLabel(p.tipo) : "", brDate(m.data), m.hora, m.status,
-        m.participantes.map(id => { const x = partById(id); return x ? x.nome + " " + x.cargo : ""; }).join(" "),
-        m.registro.ajudamos, m.registro.ajudados].join(" ").toLowerCase();
-      if(!hay.includes(q)) return false;
-    }
-    return true;
-  }));
-}
-function renderList(){
-  fillQuem();
-  const l = filtered();
-  $("#list").innerHTML = l.length ? l.map(row).join("") :
-    (state.meetings.length
-      ? '<div class="empty"><strong>Nada encontrado</strong>Ajuste a busca ou os filtros acima.</div>'
-      : '<div class="empty"><strong>Nenhuma reunião ainda</strong>Comece agendando a primeira.' +
-        '<div style="margin-top:14px"><button class="btn green" data-go="nova">Nova reunião</button></div></div>');
-}
-["#q","#f-dest","#f-quem","#f-status"].forEach(s => $(s).addEventListener("input", renderList));
-
-$("#print-btn").addEventListener("click", () => {
-  const l = filtered();
-  if(!l.length){ toast("Nada para imprimir", "A lista filtrada está vazia."); return; }
-  $("#print-area").innerHTML =
-    "<h1>GenMeet — reuniões</h1><p class='p-sub'>Emitido em " + longDate(new Date()) + " · " + l.length + " registro(s)</p>" +
-    "<table><thead><tr><th>Data</th><th>Hora</th><th>Reunião</th><th>Destino</th><th>Participantes</th><th>Situação</th></tr></thead><tbody>" +
-    l.map(m => "<tr><td>" + brDate(m.data) + "</td><td>" + m.hora + "</td><td>" + esc(m.nome) + "</td><td>" +
-      (m.destinoTipo === "pessoa" ? "Pessoa: " : "Equipe: ") + esc(destName(m)) + "</td><td>" +
-      esc(m.participantes.map(id => (partById(id)||{nome:"—"}).nome).join(", ")) + "</td><td>" + m.status + "</td></tr>").join("") +
-    "</tbody></table>";
-  window.print();
-});
-
-/* ================= agenda ================= */
-$("#cal-dows").innerHTML = DOWS.map(d => '<div class="dow">' + d + "</div>").join("");
-$("#cal-prev").addEventListener("click", () => { calRef.setMonth(calRef.getMonth()-1); renderCal(); });
-$("#cal-next").addEventListener("click", () => { calRef.setMonth(calRef.getMonth()+1); renderCal(); });
-function renderCal(){
-  const y = calRef.getFullYear(), mo = calRef.getMonth();
-  $("#cal-title").textContent = MESES[mo].charAt(0).toUpperCase() + MESES[mo].slice(1) + " de " + y;
-  const first = new Date(y, mo, 1), start = new Date(y, mo, 1 - first.getDay()), today = iso(new Date());
-  let html = "";
-  for(let i=0;i<42;i++){
-    const d = new Date(start); d.setDate(start.getDate()+i);
-    const k = iso(d), dayM = state.meetings.filter(m => m.data === k);
-    html += '<button class="day' + (d.getMonth() !== mo ? " out" : "") + (k === today ? " today" : "") +
-      (k === calSel ? " sel" : "") + '" data-day="' + k + '"><span class="n">' + d.getDate() + "</span>" +
-      '<span class="pips">' + dayM.slice(0,6).map(m => '<span class="pip' + (m.destinoTipo === "equipe" ? " eq" : "") + '"></span>').join("") +
-      "</span></button>";
-  }
-  $("#cal").innerHTML = html;
-  renderCalDay();
-}
-$("#cal").addEventListener("click", e => {
-  const b = e.target.closest("[data-day]");
-  if(b){ calSel = b.dataset.day; renderCal(); }
-});
-function renderCalDay(){
-  if(!calSel){
-    $("#cal-day-title").textContent = "Selecione um dia";
-    $("#cal-rows").innerHTML = '<div class="empty">Toque em um dia do calendário para ver as reuniões.</div>';
-    return;
-  }
-  const [y,m,d] = calSel.split("-").map(Number);
-  $("#cal-day-title").textContent = longDate(new Date(y, m-1, d));
-  const l = sortedLista(state.meetings.filter(x => x.data === calSel));
-  $("#cal-rows").innerHTML = l.length ? l.map(row).join("") :
-    '<div class="empty"><strong>Dia livre</strong>Nenhuma reunião nesta data.' +
-    '<div style="margin-top:14px"><button class="btn green" data-go="nova">Agendar</button></div></div>';
-}
-
-/* ================= equipes ================= */
-function renderTeams(){
-  $("#teams").innerHTML = state.teams.length ? state.teams.map(t => {
-    const n = state.meetings.filter(m => m.destinoTipo === "equipe" && m.destinoValor === t.id).length;
-    return '<div class="crud">' + avatar(t.logo, t.nome) +
-      '<div class="info"><b>' + esc(t.nome) + "</b><span>" + esc(t.descricao || "sem descrição") + "</span>" +
-      '<span>' + n + (n === 1 ? " reunião vinculada" : " reuniões vinculadas") + "</span></div>" +
-      '<div class="acts"><button class="btn ghost small" data-team-edit="' + t.id + '">Editar</button>' +
-      '<button class="btn ghost small" data-team-del="' + t.id + '">Remover</button></div></div>';
-  }).join("") : '<div class="empty"><strong>Nenhuma equipe cadastrada</strong>Cadastre uma equipe para agendar reuniões com equipe.</div>';
-}
-function teamModal(t, onDone){
-  const novo = !t;
-  t = t || {id:uid(), nome:"", logo:"", descricao:"", info:""};
-  openModal(
-    "<h2>" + (novo ? "Cadastrar equipe" : "Editar equipe") + "</h2>" +
-    '<div class="form" style="margin-top:18px">' +
-      '<div class="field"><label for="t-nome">Nome da equipe</label><input class="input" id="t-nome" value="' + esc(t.nome) + '"></div>' +
-      '<div class="field"><label for="t-logo">Logo da equipe</label>' +
-        '<div style="display:flex;gap:12px;align-items:center">' + avatar(t.logo, t.nome || "?", "lg") +
-        '<input type="file" class="input" id="t-logo" accept="image/*" style="padding:8px"></div></div>' +
-      '<div class="field"><label for="t-desc">Descrição</label><textarea class="input" id="t-desc">' + esc(t.descricao) + "</textarea></div>" +
-      '<div class="field"><label for="t-info">Informações da equipe</label><textarea class="input" id="t-info">' + esc(t.info) + "</textarea></div>" +
-      '<div class="form-actions"><button class="btn green" id="t-save">' + (novo ? "Cadastrar equipe" : "Salvar alterações") + "</button>" +
-      '<button class="btn ghost" id="t-cancel">Cancelar</button></div></div>',
-    ov => {
-      let logo = t.logo;
-      ov.querySelector("#t-logo").onchange = async ev => {
-        const f = ev.target.files[0]; if(!f) return;
-        logo = await shrink(await readFile(f), 320, .85);
-        ov.querySelector(".avatar").outerHTML = avatar(logo, "", "lg");
-      };
-      ov.querySelector("#t-cancel").onclick = closeModal;
-      ov.querySelector("#t-save").onclick = async () => {
-        const nome = ov.querySelector("#t-nome").value.trim();
-        if(!nome){ toast("Informe o nome", "A equipe precisa de um nome."); return; }
-        const dados = {nome, logo, descricao: ov.querySelector("#t-desc").value.trim(), info: ov.querySelector("#t-info").value.trim()};
-        if(novo) state.teams.push(touch(Object.assign({id:t.id}, dados)));
-        else touch(Object.assign(teamById(t.id), dados));
-        try{ await persistTeam(teamById(t.id)); closeModal(); renderAll(); if(onDone) onDone(t.id); toast(novo ? "Equipe cadastrada" : "Equipe atualizada", nome); }
-        catch(err){ if(novo) state.teams=state.teams.filter(x=>x.id!==t.id); toast("Não foi possível salvar a equipe",err.message||"Verifique o Supabase."); }
-      };
-    });
-}
-$("#new-team").addEventListener("click", () => teamModal(null));
-$("#teams").addEventListener("click", async e => {
-  const ed = e.target.closest("[data-team-edit]"), dl = e.target.closest("[data-team-del]");
-  if(ed) teamModal(teamById(ed.dataset.teamEdit));
-  if(dl){
-    const id = dl.dataset.teamDel;
-    const n = state.meetings.filter(m => m.destinoTipo === "equipe" && m.destinoValor === id).length;
-    if(n){ toast("Equipe em uso", "Há " + n + " reunião(ões) vinculada(s). Exclua ou altere essas reuniões primeiro."); return; }
-    if(!await ask("Remover a equipe \"" + teamById(id).nome + "\"?")) return;
-    const team=teamById(id); state.teams=state.teams.filter(t=>t.id!==id);
-    try{ await deleteTeam(team); state.lixeira.push({id,upd:Date.now()}); await save(); renderAll(); }
-    catch(err){ state.teams.push(team); toast("Não foi possível remover a equipe",err.message||"Verifique o Supabase."); }
-  }
-});
-
-/* ================= pessoas: especialistas e juízes ================= */
-function renderPeople(){
-  const esp = state.people.filter(p => p.tipo === "especialista");
-  $("#especialistas").innerHTML = esp.length ? esp.map(personRow).join("")
-    : '<div class="empty"><strong>Nenhum especialista cadastrado</strong>Cadastre para poder agendar reuniões com especialistas.</div>';
-
-  $("#juiz-filtro").innerHTML = ['<button class="tchip ' + (juizFiltro === "" ? "on" : "") + '" data-jf="">Todos</button>']
-    .concat(TIPOS.filter(t => t.k !== "especialista").map(t =>
-      '<button class="tchip ' + (juizFiltro === t.k ? "on" : "") + '" data-jf="' + t.k + '">' + t.icon + " " + t.label + "</button>")).join("");
-
-  const jui = state.people.filter(p => p.tipo !== "especialista" && (!juizFiltro || p.tipo === juizFiltro));
-  $("#juizes").innerHTML = jui.length ? jui.map(personRow).join("")
-    : '<div class="empty"><strong>Nenhum juiz nesta categoria</strong>Cadastre juízes de Robô, de Pesquisa e de CORE separadamente.</div>';
-}
-function personRow(p){
-  const n = state.meetings.filter(m => m.destinoTipo === "pessoa" && m.destinoValor === p.id).length;
-  return '<div class="crud">' + avatar(p.foto, p.nome) +
-    '<div class="info"><b>' + esc(p.nome) + "</b>" +
-    "<span>" + tipoIcon(p.tipo) + " " + esc(tipoLabel(p.tipo)) + (p.cargo ? " · " + esc(p.cargo) : "") + "</span>" +
-    "<span>" + esc(p.email || "sem e-mail") + " · " + n + (n === 1 ? " reunião" : " reuniões") + "</span></div>" +
-    '<div class="acts"><button class="btn ghost small" data-person-edit="' + p.id + '">Editar</button>' +
-    '<button class="btn ghost small" data-person-del="' + p.id + '">Remover</button></div></div>';
-}
-function personModal(p, tipoPadrao, onDone){
-  const novo = !p;
-  p = p || {id:uid(), tipo: tipoPadrao || "especialista", nome:"", foto:"", cargo:"", email:"", info:""};
-  openModal(
-    "<h2>" + (novo ? "Cadastrar pessoa" : "Editar pessoa") + "</h2>" +
-    '<div class="form" style="margin-top:18px">' +
-      '<div class="field"><span class="lbl">Tipo</span><div class="tchips" id="p-tipos">' +
-        TIPOS.map(t => '<button type="button" class="tchip ' + (p.tipo === t.k ? "on" : "") + '" data-pt="' + t.k + '">' +
-          t.icon + " " + t.label + "</button>").join("") + "</div></div>" +
-      '<div class="field"><label for="p-nome">Nome</label><input class="input" id="p-nome" value="' + esc(p.nome) + '"></div>' +
-      '<div class="field"><label for="p-foto">Foto</label><div style="display:flex;gap:12px;align-items:center">' +
-        avatar(p.foto, p.nome || "?", "lg") + '<input type="file" class="input" id="p-foto" accept="image/*" style="padding:8px"></div></div>' +
-      '<div class="grid2">' +
-        '<div class="field"><label for="p-cargo">Cargo/Função</label><input class="input" id="p-cargo" value="' + esc(p.cargo) + '"></div>' +
-        '<div class="field"><label for="p-email">E-mail</label><input class="input" id="p-email" type="email" value="' + esc(p.email) + '"></div>' +
-      "</div>" +
-      '<div class="field"><label for="p-info">Informações adicionais</label><textarea class="input" id="p-info">' + esc(p.info) + "</textarea></div>" +
-      '<div class="form-actions"><button class="btn green" id="p-save">' + (novo ? "Cadastrar" : "Salvar alterações") + "</button>" +
-      '<button class="btn ghost" id="p-cancel">Cancelar</button></div></div>',
-    ov => {
-      let tipo = p.tipo, foto = p.foto;
-      ov.querySelector("#p-tipos").onclick = ev => {
-        const b = ev.target.closest("[data-pt]"); if(!b) return;
-        tipo = b.dataset.pt;
-        ov.querySelectorAll("[data-pt]").forEach(x => x.classList.toggle("on", x.dataset.pt === tipo));
-      };
-      ov.querySelector("#p-foto").onchange = async ev => {
-        const f = ev.target.files[0]; if(!f) return;
-        foto = await shrink(await readFile(f), 320, .85);
-        ov.querySelector(".avatar").outerHTML = avatar(foto, "", "lg");
-      };
-      ov.querySelector("#p-cancel").onclick = closeModal;
-      ov.querySelector("#p-save").onclick = async () => {
-        const nome = ov.querySelector("#p-nome").value.trim();
-        const email = ov.querySelector("#p-email").value.trim();
-        if(!nome){ toast("Informe o nome", "A pessoa precisa de um nome."); return; }
-        if(email && !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)){ toast("E-mail inválido", "Confira o endereço digitado."); return; }
-        const dados = {tipo, nome, foto, cargo: ov.querySelector("#p-cargo").value.trim(), email,
-          info: ov.querySelector("#p-info").value.trim()};
-        if(novo) state.people.push(touch(Object.assign({id:p.id}, dados)));
-        else touch(Object.assign(personById(p.id), dados));
-        const oldType=novo?null:(personById(p.id)||{}).tipo;
-        try{ await persistPerson(personById(p.id),oldType); closeModal(); renderAll(); if(onDone) onDone(p.id); toast(novo ? "Pessoa cadastrada" : "Cadastro atualizado", nome); }
-        catch(err){ if(novo) state.people=state.people.filter(x=>x.id!==p.id); toast("Não foi possível salvar",err.message||"Verifique o Supabase."); }
-      };
-    });
-}
-$$("[data-new-person]").forEach(b => b.addEventListener("click", () => personModal(null, b.dataset.newPerson)));
-$("#juiz-filtro").addEventListener("click", e => {
-  const b = e.target.closest("[data-jf]");
-  if(b){ juizFiltro = b.dataset.jf; renderPeople(); }
-});
-document.addEventListener("click", async e => {
-  const ed = e.target.closest("[data-person-edit]"), dl = e.target.closest("[data-person-del]");
-  if(ed) personModal(personById(ed.dataset.personEdit));
-  if(dl){
-    const id = dl.dataset.personDel, p = personById(id);
-    const n = state.meetings.filter(m => m.destinoTipo === "pessoa" && m.destinoValor === id).length;
-    if(n){ toast("Pessoa em uso", "Há " + n + " reunião(ões) vinculada(s). Exclua ou altere essas reuniões primeiro."); return; }
-    if(!await ask("Remover \"" + p.nome + "\" do cadastro?")) return;
-    state.people=state.people.filter(x=>x.id!==id);
-    try{ await deletePerson(p); state.lixeira.push({id,upd:Date.now()}); await save(); renderAll(); }
-    catch(err){ state.people.push(p); toast("Não foi possível remover",err.message||"Verifique o Supabase."); }
-  }
-});
-
-/* ================= participantes ================= */
-function renderParts(){
-  const visiveis = state.participants.filter(p => p.role !== "criador_reuniao");
-  $("#participantes").innerHTML = visiveis.length ? visiveis.map(p => {
-    const n = state.meetings.filter(m => m.participantes.includes(p.id)).length;
-    return '<div class="crud"><div class="info"><b>' + esc(p.nome) + "</b>" +
-      "<span>" + esc(p.cargo || "sem cargo") + "</span>" +
-      "<span>" + esc(p.email || "sem e-mail") + " · " + n + (n === 1 ? " reunião" : " reuniões") + "</span></div>" +
-      '<div class="acts"><button class="btn ghost small" data-part-edit="' + p.id + '">Editar</button>' +
-      '<button class="btn ghost small" data-part-del="' + p.id + '">Remover</button></div></div>';
-  }).join("") : '<div class="empty"><strong>Nenhum participante cadastrado</strong>Os participantes das reuniões vêm deste cadastro.</div>';
-}
-function partModal(p, onDone){
-  const novo = !p;
-  p = p || {id:uid(), nome:"", cargo:"", email:""};
-  openModal(
-    "<h2>" + (novo ? "Cadastrar participante" : "Editar participante") + "</h2>" +
-    '<div class="form" style="margin-top:18px">' +
-      '<div class="field"><label for="pa-nome">Nome</label><input class="input" id="pa-nome" value="' + esc(p.nome) + '"></div>' +
-      '<div class="field"><label for="pa-cargo">Cargo</label><input class="input" id="pa-cargo" value="' + esc(p.cargo) + '"></div>' +
-      '<div class="field"><label for="pa-email">E-mail</label><input class="input" id="pa-email" type="email" value="' + esc(p.email) + '">' +
-        '</div>' +
-      '<div class="form-actions"><button class="btn green" id="pa-save">' + (novo ? "Cadastrar" : "Salvar alterações") + "</button>" +
-      '<button class="btn ghost" id="pa-cancel">Cancelar</button></div></div>',
-    ov => {
-      ov.querySelector("#pa-cancel").onclick = closeModal;
-      ov.querySelector("#pa-save").onclick = async () => {
-        const nome = ov.querySelector("#pa-nome").value.trim();
-        const email = ov.querySelector("#pa-email").value.trim();
-        if(!nome){ toast("Informe o nome", "O participante precisa de um nome."); return; }
-        if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)){ toast("E-mail obrigatório", "O e-mail é usado para entrar no sistema."); return; }
-        const dados = {nome, cargo: ov.querySelector("#pa-cargo").value.trim(), email};
-        if(novo) state.participants.push(touch(Object.assign({id:p.id}, dados)));
-        else touch(Object.assign(partById(p.id), dados));
-        try{ await persistParticipant(partById(p.id)); closeModal(); renderAll(); if(onDone) onDone(p.id); toast(novo ? "Participante cadastrado" : "Cadastro atualizado", nome); }
-        catch(err){ if(novo) state.participants=state.participants.filter(x=>x.id!==p.id); toast("Não foi possível salvar o participante",err.message||"Verifique o Supabase."); }
-      };
-    });
-}
-$("#new-part").addEventListener("click", () => partModal(null));
-document.addEventListener("click", async e => {
-  const ed = e.target.closest("[data-part-edit]"), dl = e.target.closest("[data-part-del]");
-  if(ed) partModal(partById(ed.dataset.partEdit));
-  if(dl){
-    const id = dl.dataset.partDel, p = partById(id);
-    const n = state.meetings.filter(m => m.participantes.includes(id)).length;
-    if(n && !await ask(p.nome + " está em " + n + " reunião(ões). Remover mesmo assim?")) return;
-    if(!n && !await ask("Remover \"" + p.nome + "\" do cadastro?")) return;
-    state.participants=state.participants.filter(x=>x.id!==id);
-    state.meetings.forEach(m=>{if(m.participantes.includes(id)){m.participantes=m.participantes.filter(x=>x!==id);touch(m);}});
-    try{ await deleteParticipant(p); state.lixeira.push({id,upd:Date.now()}); await save(); renderAll(); }
-    catch(err){ state.participants.push(p); toast("Não foi possível remover o participante",err.message||"Verifique o Supabase."); }
-  }
-});
-
-/* ================= avisos (1 h e 30 min) ================= */
-async function checkReminders(){
-  const now = Date.now();
-  let changed = false;
-  state.meetings.filter(m => m.status === "agendada").forEach(m => {
-    const start = dt(m).getTime();
-    reminders().forEach(r => {
-      const at = start - r.min*60000, key = m.id + ":" + r.min;
-      if(now >= at && now < start && !state.fired.includes(key)){
-        state.fired.push(key); changed = true;
-        dispararAviso(m, r.rot, false);
+        id =
+          item.id ||
+          item.participante_id ||
+          item.participant_id;
       }
-    });
-  });
-  if(changed){ await Store.set(KEY,JSON.stringify(state)); renderPainel(); }
-}
-if(window.Notification && Notification.permission === "default"){
-  document.addEventListener("click", function once(){
-    try{ Notification.requestPermission(); }catch(e){}
-  }, {once:true});
-}
 
-/* ================= configurações ================= */
-const LOGO_SVG = '<svg viewBox="0 0 48 48" aria-hidden="true">' +
-  '<g fill="none" stroke="var(--green)" stroke-width="3.2">' +
-  '<ellipse cx="24" cy="24" rx="21" ry="9"/>' +
-  '<ellipse cx="24" cy="24" rx="21" ry="9" transform="rotate(60 24 24)"/>' +
-  '<ellipse cx="24" cy="24" rx="21" ry="9" transform="rotate(120 24 24)"/></g>' +
-  '<circle cx="24" cy="5.8" r="4.4" fill="var(--teal)"/>' +
-  '<circle cx="8.4" cy="33" r="3.8" fill="var(--blue)"/>' +
-  '<circle cx="39.6" cy="33" r="3.8" fill="var(--green-light)"/></svg>';
+      if (!id) {
+        continue;
+      }
 
-function hex(h){ h = (h||"#000").replace("#",""); if(h.length===3) h = h.split("").map(c=>c+c).join("");
-  return [parseInt(h.slice(0,2),16), parseInt(h.slice(2,4),16), parseInt(h.slice(4,6),16)]; }
-function mix(a, b, t){
-  const A = hex(a), B = hex(b);
-  return "#" + A.map((v,i) => Math.round(v + (B[i]-v)*t).toString(16).padStart(2,"0")).join("");
-}
-const PALETAS = [
-  {nome:"GenMeet",        cores:{bg:"#1327C6", navy:"#0A1240", blue:"#3350F0", green:"#8FE01B", teal:"#1596A8"}},
-  {nome:"Azul noite",     cores:{bg:"#0A1836", navy:"#060F24", blue:"#2E6BE6", green:"#26D07C", teal:"#1596A8"}},
-  {nome:"Verde floresta", cores:{bg:"#07341F", navy:"#042114", blue:"#1E7F8C", green:"#7BE034", teal:"#12A17A"}},
-  {nome:"Roxo",           cores:{bg:"#2B1470", navy:"#170A3D", blue:"#6B4CF0", green:"#A8E01B", teal:"#2F8FA8"}},
-  {nome:"Vinho",          cores:{bg:"#3A0A2A", navy:"#22061A", blue:"#B0356F", green:"#E0A31B", teal:"#8C1F5A"}},
-  {nome:"Grafite",        cores:{bg:"#1B1F2A", navy:"#12151D", blue:"#4A6CF0", green:"#8FE01B", teal:"#3E8E9E"}}
-];
-let temaPreview = null;
-/* cada pessoa vê o sistema com as cores dela; sem tema pessoal, valem as cores da equipe */
-function temaAtivo(){
-  const base = cfg().cores;
-  if(temaPreview) return Object.assign({}, base, temaPreview);
-  try{
-    if(sessao){
-      const eu = partById(sessao.id);
-      if(eu && eu.tema) return Object.assign({}, base, eu.tema);
+      const participanteId =
+        await this.getParticipanteId(
+          supabase,
+          id
+        );
+
+      if (participanteId) {
+        validos.push(participanteId);
+      }
+
     }
-  }catch(e){}
-  return base;
-}
-function applyConfig(){
-  const c = cfg(), co = temaAtivo(), r = document.documentElement.style;
-  r.setProperty("--bg", co.bg);
-  r.setProperty("--navy", co.navy);
-  r.setProperty("--surface", co.navy);
-  r.setProperty("--navy-2", mix(co.navy, "#000000", .35));
-  r.setProperty("--raised", mix(co.navy, co.blue, .28));
-  r.setProperty("--line", mix(co.navy, co.blue, .55));
-  r.setProperty("--line-soft", mix(co.navy, co.blue, .3));
-  r.setProperty("--blue", co.blue);
-  r.setProperty("--blue-light", mix(co.blue, "#FFFFFF", .45));
-  r.setProperty("--blue-deep", mix(co.blue, "#000000", .35));
-  r.setProperty("--green", co.green);
-  r.setProperty("--green-light", mix(co.green, "#FFFFFF", .35));
-  r.setProperty("--green-deep", mix(co.green, "#000000", .3));
-  r.setProperty("--teal", co.teal);
-  r.setProperty("--text", mix(co.blue, "#FFFFFF", .74));
-  r.setProperty("--dim", mix(co.blue, "#FFFFFF", .52));
-  r.setProperty("--atom", 'url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 200 200\'%3E%3Cg fill=\'none\' stroke=\'%23' +
-    co.green.replace("#","") + '\' stroke-width=\'9\'%3E%3Cellipse cx=\'100\' cy=\'100\' rx=\'88\' ry=\'38\'/%3E%3Cellipse cx=\'100\' cy=\'100\' rx=\'88\' ry=\'38\' transform=\'rotate(60 100 100)\'/%3E%3Cellipse cx=\'100\' cy=\'100\' rx=\'88\' ry=\'38\' transform=\'rotate(120 100 100)\'/%3E%3C/g%3E%3C/svg%3E")');
 
-  const nome = c.nome || "GenMeet";
-  const m = nome.match(/^(.*?)(meet)$/i);
-  const marca = m ? esc(m[1]) + "<span>" + esc(m[2]) + "</span>" : esc(nome);
-  const marcaHtml = (c.logo ? '<img src="' + c.logo + '" alt="">' : LOGO_SVG) +
-    '<span class="wordmark">' + marca + "</span>";
-  $$(".brand, .mobile-brand").forEach(el => el.innerHTML = marcaHtml);
-  document.title = nome + " — agendamento, comunicação e registro de reuniões";
-
-  $$("#nav button[data-v]").forEach(b => {
-    const k = b.dataset.v;
-    if(k === "painel" || k === "config") return;
-    b.style.display = c.menu[k] === false ? "none" : "";
-  });
-  const foot = document.querySelector(".rail-foot");
-  if(foot) foot.textContent = "Avisos automáticos " + reminders().map(x => x.rot.replace(" antes","")).join(" e ") + " antes de cada reunião.";
-}
-
-function applyLoginTheme(){
-  const co = DEFAULT_CFG.cores;
-  const r = document.documentElement.style;
-  r.setProperty("--bg", co.bg);
-  r.setProperty("--navy", co.navy);
-  r.setProperty("--surface", co.navy);
-  r.setProperty("--navy-2", mix(co.navy, "#000000", .35));
-  r.setProperty("--raised", mix(co.navy, co.blue, .28));
-  r.setProperty("--line", mix(co.navy, co.blue, .55));
-  r.setProperty("--line-soft", mix(co.navy, co.blue, .3));
-  r.setProperty("--blue", co.blue);
-  r.setProperty("--blue-light", mix(co.blue, "#FFFFFF", .45));
-  r.setProperty("--blue-deep", mix(co.blue, "#000000", .35));
-  r.setProperty("--green", co.green);
-  r.setProperty("--green-light", mix(co.green, "#FFFFFF", .35));
-  r.setProperty("--green-deep", mix(co.green, "#000000", .3));
-  r.setProperty("--teal", co.teal);
-  r.setProperty("--text", mix(co.blue, "#FFFFFF", .74));
-  r.setProperty("--dim", mix(co.blue, "#FFFFFF", .52));
-}
-
-let tmpLembretes = [];
-function renderConfig(){
-  const c = cfg();
-  tmpLembretes = (c.lembretes || []).slice();
-  const chk = (id, on, label) => '<div class="cfg-row"><input type="checkbox" id="' + id + '" ' + (on ? "checked" : "") +
-    '><label for="' + id + '">' + label + "</label></div>";
-  const cor = (id, val, label) => '<div class="cfg-row"><label for="' + id + '">' + label +
-    '</label><input type="color" id="' + id + '" value="' + val + '"></div>';
-
-  $("#cfg-body").innerHTML =
-    '<div class="cfg-grid">' +
-      '<div class="cfg-card"><h3>Identidade</h3><p class="hint">Nome e marca do sistema.</p>' +
-        '<div class="field"><label for="c-nome">Nome do sistema</label><input class="input" id="c-nome" value="' + esc(c.nome) + '"></div>' +
-        '<div class="field" style="margin-top:12px"><label for="c-logo">Logo (substitui o átomo)</label>' +
-        '<input type="file" class="input" id="c-logo" accept="image/*" style="padding:8px"></div>' +
-        '<div class="cfg-actions"><button class="btn ghost small" id="c-logo-rm">Voltar ao átomo</button></div></div>' +
-
-      '<div class="cfg-card"><h3>Cores da equipe</h3><p class="hint">Padrão visual de quem ainda não escolheu cores próprias. ' +
-        "Para mudar só as suas, use Conta → Minhas cores.</p>" +
-        cor("c-bg", c.cores.bg, "Fundo (azul principal)") +
-        cor("c-navy", c.cores.navy, "Painéis e cartões") +
-        cor("c-blue", c.cores.blue, "Azul de ação") +
-        cor("c-green", c.cores.green, "Verde de destaque") +
-        cor("c-teal", c.cores.teal, "Cor de apoio") +
-        '<div class="cfg-actions"><button class="btn ghost small" id="c-cores-reset">Restaurar padrão</button></div></div>' +
-
-      '<div class="cfg-card"><h3>Avisos</h3><p class="hint">Quantos minutos antes cada aviso dispara.</p>' +
-        '<div id="c-lembretes"></div>' +
-        '<div class="cfg-actions"><button class="btn ghost small" id="c-lem-add">+ Adicionar aviso</button></div>' +
-        '<div style="margin-top:14px">' + chk("c-notif", c.notificacoes, "Mostrar notificação do navegador") + "</div></div>" +
-
-      '<div class="cfg-card"><h3>Regras</h3><p class="hint">Validações do formulário de reunião.</p>' +
-        chk("c-r1", c.regras.participantesObrig, "Exigir ao menos um participante") +
-        chk("c-r2", c.regras.bloquearPassado, "Bloquear data anterior a hoje") +
-        chk("c-r3", c.regras.confirmarExclusao, "Pedir confirmação ao excluir ou cancelar") +
-        '<p class="hint" style="margin-top:10px">A regra de destino único (pessoa ou equipe) é fixa e não pode ser desligada.</p></div>' +
-
-      '<div class="cfg-card"><h3>Rótulos dos tipos</h3><p class="hint">Renomeie como cada tipo aparece no sistema.</p>' +
-        TIPOS.map(t => '<div class="field" style="margin-bottom:10px"><label for="c-rot-' + t.k + '">' + t.icon + " " + t.label +
-          '</label><input class="input" id="c-rot-' + t.k + '" value="' + esc(tipoLabel(t.k)) + '"></div>').join("") + "</div>" +
-
-      '<div class="cfg-card"><h3>Menu</h3><p class="hint">Escolha quais áreas aparecem na navegação.</p>' +
-        Object.keys(DEFAULT_CFG.menu).map(k => chk("c-menu-" + k, c.menu[k] !== false,
-          ({nova:"Nova reunião",reunioes:"Reuniões",agenda:"Agenda",equipes:"Equipes",
-            especialistas:"Especialistas",juizes:"Juízes",participantes:"Participantes"})[k])).join("") + "</div>" +
-
-    "</div>";
-
-  drawLembretes();
-  bindConfig();
-}
-function drawLembretes(){
-  $("#c-lembretes").innerHTML = tmpLembretes.map((v,i) =>
-    '<div class="cfg-row"><input class="input mini" type="number" min="1" max="10080" value="' + v + '" data-lem="' + i + '">' +
-    '<label>minutos antes</label>' +
-    '<button class="btn ghost small" data-lem-rm="' + i + '">remover</button></div>').join("") ||
-    '<p class="hint">Nenhum aviso configurado.</p>';
-}
-function bindConfig(){
-  const body = $("#cfg-body");
-  ["bg","navy","blue","green","teal"].forEach(k => {
-    const el = $("#c-" + k);
-    el.oninput = () => { cfg().cores[k] = el.value; applyConfig(); };
-  });
-  $("#c-cores-reset").onclick = () => { state.cfg.cores = clone(DEFAULT_CFG.cores); applyConfig(); renderConfig(); };
-  $("#c-logo").onchange = async ev => {
-    const f = ev.target.files[0]; if(!f) return;
-    state.cfg.logo = await shrink(await readFile(f), 160, .9);
-    applyConfig();
-  };
-  $("#c-logo-rm").onclick = () => { state.cfg.logo = ""; applyConfig(); };
-  $("#c-lem-add").onclick = () => { tmpLembretes.push(15); drawLembretes(); };
-  body.addEventListener("click", e => {
-    const rm = e.target.closest("[data-lem-rm]");
-    if(rm){ tmpLembretes.splice(+rm.dataset.lemRm, 1); drawLembretes(); }
-  });
-  body.addEventListener("input", e => {
-    const i = e.target.closest("[data-lem]");
-    if(i) tmpLembretes[+i.dataset.lem] = Math.max(1, parseInt(i.value || "1", 10));
-  });
-}
-async function salvarConfig(){
-  const c = state.cfg;
-  c.nome = $("#c-nome").value.trim() || "GenMeet";
-  c.lembretes = tmpLembretes.filter(n => n > 0).sort((a,b) => b-a);
-  if(!c.lembretes.length) c.lembretes = [60,30];
-  c.notificacoes = $("#c-notif").checked;
-  c.regras = {participantesObrig: $("#c-r1").checked, bloquearPassado: $("#c-r2").checked, confirmarExclusao: $("#c-r3").checked};
-  TIPOS.forEach(t => { c.rotulos[t.k] = $("#c-rot-" + t.k).value.trim() || t.label; });
-  Object.keys(DEFAULT_CFG.menu).forEach(k => { c.menu[k] = $("#c-menu-" + k).checked; });
-  try{ await persistConfig(); applyConfig(); renderAll(); renderConfig(); toast("Configurações salvas", "As mudanças já valem em todo o sistema."); }
-  catch(err){ toast("Não foi possível salvar as configurações",err.message||"Verifique o Supabase."); }
-}
-$("#cfg-save").addEventListener("click", salvarConfig);
-
-/* ================= contas ================= */
-let sessao = null;
-let usuariosEventsBound = false;
-
-const emailIgual = (a,b) => (a||"").trim().toLowerCase() === (b||"").trim().toLowerCase();
-const contaPorEmail = e => state.participants.find(p => emailIgual(p.email, e));
-
-async function carregarSessao(){
-  try{
-    const {data,error}=await sb.auth.getSession();
-    if(error) throw error;
-    const user=data&&data.session?data.session.user:null;
-    if(!user) return;
-    const pr=await sb.from("participantes").select("id,nome,email,cargo,role,ativo,tema").eq("email",user.email).maybeSingle();
-    if(pr.error) throw pr.error;
-    const c=pr.data;
-    if(!c || c.ativo===false){ await sb.auth.signOut(); return; }
-    sessao={id:c.id,nome:c.nome||user.email.split('@')[0],email:user.email||c.email,role:c.role||'pessoa_comum'};
-    await carregarDadosSupabase();
-    try{ await Store.set(KEY,JSON.stringify(state)); }catch(e){}
-  }catch(e){ console.warn('Supabase Auth: falha ao carregar sessão',e); }
-}
-
-async function sair(){
-  if(!sessao) return;
-  if(!await confirmar("Sair da conta " + sessao.email + "?", "Sair")) return;
-  try{ await sb.auth.signOut(); }catch(e){ toast("Erro ao sair", e.message || "Não foi possível encerrar a sessão."); return; }
-  sessao = null; temaPreview = null; applyConfig(); telaLogin();
-}
-
-function telaLogin(modo="entrar"){
-  const ov = document.createElement("div");
-  ov.className = "login-ov";
-  ov.id = "login-ov";
-  ov.innerHTML =
-    '<div class="login-box"><div class="brand"></div>' +
-    '<h2 id="lg-titulo"></h2>' +
-    '<p class="hint" id="lg-desc" style="margin-top:6px"></p>' +
-    '<div class="form" id="lg-form"></div>' +
-    '</div>';
-  document.body.appendChild(ov);
-  applyConfig();
-  applyLoginTheme();
-  const form = ov.querySelector("#lg-form");
-  const titulo = ov.querySelector("#lg-titulo");
-  const desc = ov.querySelector("#lg-desc");
-  const erro = m => { const e = ov.querySelector("#lg-erro"); if(e){ e.textContent = m; e.classList.add("on"); } };
-  const campo = (id,label,type="text",autocomplete="off") => '<div class="field"><label for="'+id+'">'+label+'</label><input class="input" id="'+id+'" type="'+type+'" autocomplete="'+autocomplete+'"></div>';
-
-  function renderEntrar(){
-    titulo.textContent="Entrar";
-    desc.textContent="Entre com seu e-mail e senha do GenMeet.";
-    form.innerHTML = campo("lg-email","E-mail","email","username") +
-      campo("lg-senha","Senha","password","current-password") +
-      '<div class="err-msg" id="lg-erro"></div>' +
-      '<div class="form-actions"><button class="btn green" id="lg-entrar">Entrar</button></div>' +
-      '<div class="form-actions"><button class="btn ghost small" id="lg-primeiro">Primeiro acesso</button></div>' +
-      '<p class="hint">No primeiro acesso, use o e-mail previamente cadastrado pelo administrador e crie sua própria senha.</p>';
-    form.querySelector("#lg-entrar").onclick = entrar;
-    form.querySelector("#lg-primeiro").onclick = () => renderPrimeiro();
-    form.querySelectorAll("input").forEach(i => i.addEventListener("keydown", e => { if(e.key === "Enter") entrar(); }));
-    form.querySelector("#lg-email").focus();
+    return [
+      ...new Set(validos)
+    ];
   }
 
-  function renderPrimeiro(){
-    titulo.textContent="Primeiro acesso";
-    desc.textContent="Digite o e-mail que o administrador cadastrou e crie sua própria senha.";
-    form.innerHTML = campo("lg-email","E-mail","email","username") +
-      campo("lg-senha1","Crie sua senha","password","new-password") +
-      campo("lg-senha2","Repita a senha","password","new-password") +
-      '<div class="err-msg" id="lg-erro"></div>' +
-      '<div class="form-actions"><button class="btn green" id="lg-criar">Criar conta e entrar</button></div>' +
-      '<div class="form-actions"><button class="btn ghost small" id="lg-voltar">Voltar para entrar</button></div>';
-    form.querySelector("#lg-criar").onclick = primeiroAcesso;
-    form.querySelector("#lg-voltar").onclick = () => renderEntrar();
-    form.querySelectorAll("input").forEach(i => i.addEventListener("keydown", e => { if(e.key === "Enter") primeiroAcesso(); }));
-    form.querySelector("#lg-email").focus();
-  }
-
-  async function entrar(){
-    const email = form.querySelector("#lg-email").value.trim();
-    const senha = form.querySelector("#lg-senha").value;
-    if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) return erro("Digite um e-mail válido.");
-    if(senha.length < 6) return erro("A senha precisa ter ao menos 6 caracteres.");
-    const btn = form.querySelector("#lg-entrar"); btn.disabled=true;
-    try{
-      const {data,error}=await sb.auth.signInWithPassword({email,password:senha});
-      if(error) throw error;
-      await finalizarLogin(data.user);
-    }catch(e){
-      console.error("GenMeet · erro no login:", e);
-      erro(e && e.message ? e.message : "Não foi possível entrar.");
-    }
-    finally{ btn.disabled=false; }
-  }
-
-  async function primeiroAcesso(){
-    const email=form.querySelector("#lg-email").value.trim().toLowerCase();
-    const s1=form.querySelector("#lg-senha1").value;
-    const s2=form.querySelector("#lg-senha2").value;
-    if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) return erro("Digite um e-mail válido.");
-    if(s1.length<6) return erro("A senha precisa ter ao menos 6 caracteres.");
-    if(s1!==s2) return erro("As senhas não são iguais.");
-    const btn=form.querySelector("#lg-criar"); btn.disabled=true;
-    try{
-      // A verificação do primeiro acesso precisa funcionar antes do login.
-      // Por isso usamos uma RPC SECURITY DEFINER, em vez de consultar
-      // diretamente participantes (que fica protegido por RLS).
-      const chk=await sb.rpc("check_genmeet_registration",{p_email:email});
-      if(chk.error) throw chk.error;
-      if(chk.data!==true) throw new Error("Este e-mail ainda não foi cadastrado por um administrador.");
-
-      let cadastro=null;
-      try{
-        const pc=await sb.rpc("get_genmeet_registration_data",{p_email:email});
-        if(!pc.error && pc.data){ cadastro=Array.isArray(pc.data)?pc.data[0]:pc.data; }
-      }catch(_){}
-
-      const {data,error}=await sb.auth.signUp({
-        email,password:s1,
-        options:{data:{nome:cadastro?.nome||email.split("@")[0],cargo:cadastro?.cargo||""}}
-      });
-      if(error) throw error;
-      if(!data.user) throw new Error("Não foi possível criar a conta.");
-      if(!data.session) throw new Error("A conta foi criada, mas a confirmação de e-mail está ativa no Supabase. Desative a confirmação de e-mail em Authentication > Providers > Email.");
-      await finalizarLogin(data.user);
-    }catch(e){ erro(e.message || "Não foi possível concluir o primeiro acesso."); }
-    finally{ btn.disabled=false; }
-  }
-
-  async function finalizarLogin(user){
-    if(!user || !user.id) throw new Error("O Supabase não retornou o usuário autenticado.");
-    const pr=await sb.from("participantes").select("id,nome,email,cargo,role,ativo,tema").eq("email",user.email).maybeSingle();
-    if(pr.error) throw pr.error;
-    const c=pr.data;
-    if(!c) throw new Error("Este e-mail não está cadastrado como participante no GenMeet.");
-    if(c.ativo===false){ await sb.auth.signOut(); throw new Error("Esta conta está desativada no GenMeet."); }
-    sessao={id:c.id,nome:c.nome||((user.email||"").split("@")[0]),email:user.email||c.email,role:c.role||"pessoa_comum"};
-    await carregarDadosSupabase();
-    try{ await Store.set(KEY,JSON.stringify(state)); }catch(e){}
-    ov.remove(); temaPreview=null; applyConfig(); renderAll();
-    toast("Bem-vindo, "+c.nome.split(" ")[0],"Você entrou com sua conta do GenMeet.");
-  }
-
-  if(modo==="primeiro") renderPrimeiro(); else renderEntrar();
-}
-
-function renderConta(){
-  if(!sessao){ $("#conta-body").innerHTML = ""; return; }
-  const c = partById(sessao.id) || sessao;
-  const minhas = state.meetings.filter(m => m.criadoPor && m.criadoPor.id === sessao.id).length;
-  const servidor = (cfg().servidor || "").trim();
-  $("#conta-body").innerHTML =
-    '<div class="cfg-grid">' +
-      '<div class="cfg-card"><h3>Você</h3>' +
-        '<p class="hint">' + esc(c.nome) + " · " + esc(c.email) + (c.cargo ? " · " + esc(c.cargo) : "") + "</p>" +
-        '<p class="hint" style="margin-top:8px">' + minhas + (minhas === 1 ? " reunião criada por você" : " reuniões criadas por você") + "</p>" +
-        '<div class="field" style="margin-top:14px"><label for="ct-s1">Nova senha</label><input class="input" id="ct-s1" type="password"></div>' +
-        '<div class="cfg-actions"><button class="btn ghost small" id="ct-senha">Trocar senha</button>' +
-        '<button class="btn ghost small" id="ct-sair">Sair da conta</button></div></div>' +
-      '<div class="cfg-card"><h3>Compartilhamento da equipe</h3>' +
-        '<p class="hint">Os dados desta versão ficam sincronizados diretamente no Supabase. Não é necessário configurar Google Apps Script.</p>' +
-        '<div class="field" style="margin-top:12px"><label for="ct-srv">Banco de dados</label>' +
-        '<input class="input" id="ct-srv" value="Supabase · conectado automaticamente" readonly></div>' +
-        '<div class="cfg-actions"><button class="btn ghost small" id="ct-sync">Sincronizar agora</button></div>' +
-        '<p class="hint" style="margin-top:10px"><span class="sync-dot"></span>' +
-        (ultimoSync ? "Última sincronização às " + ultimoSync : "Sincronização direta com o Supabase") + "</p>" +
-        '<p class="hint">Fotos e documentos podem continuar locais quando não houver armazenamento de arquivos configurado.</p></div>' +
-      '<div class="cfg-card"><h3>Minhas cores</h3>' +
-        '<p class="hint">A escolha vale só para você e acompanha o seu login em qualquer aparelho. Os outros continuam vendo as cores da equipe.</p>' +
-        '<div class="tchips" style="margin-top:12px">' + PALETAS.map((pa,i) => '<button class="tchip" data-paleta="' + i + '">' + esc(pa.nome) + "</button>").join("") + "</div>" +
-        [["bg","Fundo"],["navy","Painéis e cartões"],["blue","Azul de ação"],["green","Verde de destaque"],["teal","Cor de apoio"]].map(par => '<div class="cfg-row"><label for="tm-' + par[0] + '">' + par[1] + '</label><input type="color" id="tm-' + par[0] + '" value="' + temaAtivo()[par[0]] + '"></div>').join("") +
-        '<div class="cfg-actions"><button class="btn green small" id="tm-save">Salvar minhas cores</button><button class="btn ghost small" id="tm-reset">Usar as cores da equipe</button></div></div>' +
-      '<div class="cfg-card"><h3>Usuários do GenMeet</h3>' +
-        '<p class="hint">O Administrador principal pode cadastrar, editar, ativar/desativar e excluir usuários. Administradores comuns não alteram níveis de acesso.</p>' +
-        '<div class="form" style="margin-top:14px">' +
-          '<div class="field"><label for="ac-nome">Nome</label><input class="input" id="ac-nome" placeholder="Nome da pessoa"></div>' +
-          '<div class="field"><label for="ac-cargo">Cargo</label><input class="input" id="ac-cargo" placeholder="Ex.: Programador, Professor, Aluno"></div>' +
-          '<div class="field"><label for="ac-email">E-mail</label><input class="input" id="ac-email" type="email" placeholder="pessoa@escola.com"></div>' +
-          '<div class="field"><label for="ac-role">Tipo de acesso</label><select class="input" id="ac-role">' + (sessao.role === "adm_principal" ? '<option value="pessoa_comum">Pessoa comum</option><option value="adm">Administrador</option>' : '<option value="pessoa_comum">Pessoa comum</option>') + '</select></div>' +
-          '<div class="cfg-actions"><button class="btn green small" id="ac-cadastrar">Cadastrar pessoa</button></div>' +
-          '<p class="hint" id="ac-status" style="margin-top:10px"></p>' +
-        '</div><div id="ac-list" style="margin-top:16px"></div></div>' +
-    "</div>";
-
-  const eu = partById(sessao.id);
-  temaPreview = (eu && eu.tema) ? Object.assign({}, eu.tema) : null;
-  const pintar = () => { ["bg","navy","blue","green","teal"].forEach(k => { const el = $("#tm-" + k); if(el) el.value = temaAtivo()[k]; }); };
-  ["bg","navy","blue","green","teal"].forEach(k => { const el = $("#tm-" + k); if(el) el.oninput = () => { temaPreview = Object.assign({}, temaAtivo()); temaPreview[k] = el.value; applyConfig(); }; });
-  $("#conta-body").querySelectorAll("[data-paleta]").forEach(b => b.onclick = () => { temaPreview = Object.assign({}, PALETAS[+b.dataset.paleta].cores); applyConfig(); pintar(); });
-  $("#tm-save").onclick=async()=>{
-    try{
-      const tema=Object.assign({},temaAtivo());
-      const rp=await sb.rpc("genmeet_save_my_theme",{p_tema:tema});
-      if(rp.error) throw rp.error;
-      let alvo=partById(sessao.id)||contaPorEmail(sessao.email);
-      if(alvo){ alvo.tema=tema; touch(alvo); }
-      else {
-        alvo={id:sessao.id,nome:sessao.nome||"",cargo:"",email:sessao.email||"",role:sessao.role||"pessoa_comum",ativo:true,tema:tema};
-        state.participants.push(alvo);
-      }
-      dbBaseline.participants=clone(state.participants);
-      await Store.set(KEY,JSON.stringify(state));
-      temaPreview=null;applyConfig();pintar();
-      toast("Cores salvas","As cores ficam vinculadas à sua conta no Supabase.");
-    }catch(e){toast("Não foi possível salvar as cores",e.message||"Verifique o Supabase.");}
-  };
-  $("#tm-reset").onclick=async()=>{
-    try{
-      const rp=await sb.rpc("genmeet_save_my_theme",{p_tema:{}});
-      if(rp.error) throw rp.error;
-      const alvo=partById(sessao.id)||contaPorEmail(sessao.email);
-      if(alvo){ delete alvo.tema; touch(alvo); }
-      await Store.set(KEY,JSON.stringify(state));
-      temaPreview=null;applyConfig();pintar();
-      toast("Cores da equipe","Voltou ao padrão definido em Configurações.");
-    }catch(e){toast("Não foi possível restaurar as cores",e.message||"Verifique o Supabase.");}
-  };
-  $("#ct-senha").onclick = async () => { const nova = $("#ct-s1").value; if(nova.length < 6){ toast("Senha curta", "Use ao menos 6 caracteres."); return; } try{ const {error}=await sb.auth.updateUser({password:nova}); if(error) throw error; $("#ct-s1").value=""; toast("Senha alterada", "A nova senha já está ativa."); }catch(e){ toast("Erro ao alterar senha", e.message || "Não foi possível alterar a senha."); } };
-  $("#ct-sair").onclick = sair;
-  $("#ct-sync").onclick=async()=>{try{await syncStateToSupabase();await carregarDadosSupabase();renderAll();toast("Sincronizado","Os dados foram enviados e atualizados no Supabase.");}catch(err){toast("Falha na sincronização",err.message||"Não foi possível sincronizar.");}};
-
-  function renderUsuarioLista(lista){
-    const box=$('#ac-list');
-    if(!box) return;
-    box.innerHTML=(lista||[]).map(x=>{
-      const protegido=x.role==='adm_principal';
-      const papel=protegido?'Administrador principal':(x.role==='adm'?'Administrador':'Pessoa comum');
-      const botoes=protegido
-        ? '<span class="hint">Protegido</span>'
-        : (sessao.role==='adm_principal'
-          ? '<div style="display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end">'+
-            '<button class="btn ghost small" data-user-edit="'+x.id+'">Editar</button>'+ 
-            '<button class="btn ghost small" data-user-toggle="'+x.id+'">'+(x.ativo?'Desativar':'Ativar')+'</button>'+ 
-            '<button class="btn ghost small" data-user-del="'+x.id+'">Excluir</button></div>'
-          : '<span class="hint">Sem permissão para alterar</span>');
-      return '<div class="cfg-row"><label><b>'+esc(x.nome||x.email)+'</b><br><span class="hint">'+esc(x.cargo||'Sem cargo')+' · '+esc(x.email||'')+'<br>'+papel+(x.ativo?' · ativo':' · desativado')+(x.pendente?' · aguardando primeiro acesso':'')+'</span></label><span>'+botoes+'</span></div>';
-    }).join('') || '<p class="hint">Nenhuma pessoa cadastrada.</p>';
-  }
-
-  async function carregarUsuarios(){
-    const box=$("#ac-list"), status=$("#ac-status"); if(!box)return;
-    try{
-      const r=await sb.from("participantes").select("id,nome,email,cargo,role,ativo,criado_em").order("criado_em");
-      if(r.error)throw r.error;
-      const lista=(r.data||[]).map(x=>Object.assign({pendente:false},x));
-      renderUsuarioLista(lista);
-      const pode=!!sessao&&(sessao.role==="adm_principal"||sessao.role==="adm");
-      $("#ac-cadastrar").disabled=!pode;
-      status.textContent=pode?"":"Somente administradores podem cadastrar pessoas.";
-    }catch(e){box.innerHTML='<p class="hint">Não foi possível carregar os usuários: '+esc(e.message||"erro")+'</p>';console.warn(e);}
-  }
-
-  async function editarUsuario(id){
-    if(!sessao||sessao.role!=="adm_principal")return;
-    const r=await sb.from("participantes").select("id,nome,email,cargo,role,ativo").eq("id",id).maybeSingle();
-    if(r.error||!r.data){toast("Usuário não encontrado",r.error?.message||"");return;}
-    const u=r.data;
-    openModal('<h2>Editar usuário</h2><div class="form" style="margin-top:18px"><div class="field"><label>Nome</label><input class="input" id="eu-nome" value="'+esc(u.nome||"")+'"></div><div class="field"><label>Cargo</label><input class="input" id="eu-cargo" value="'+esc(u.cargo||"")+'"></div><div class="field"><label>Tipo de acesso</label><select class="input" id="eu-role"><option value="pessoa_comum" '+(u.role==="pessoa_comum"?"selected":"")+'>Pessoa comum</option><option value="adm" '+(u.role==="adm"?"selected":"")+'>Administrador</option></select></div><div class="form-actions"><button class="btn green" id="eu-save">Salvar alterações</button><button class="btn ghost" id="eu-cancel">Cancelar</button></div></div>',ov=>{
-      ov.querySelector("#eu-cancel").onclick=closeModal;
-      ov.querySelector("#eu-save").onclick=async()=>{
-        const nome=ov.querySelector("#eu-nome").value.trim(),cargo=ov.querySelector("#eu-cargo").value.trim(),role=ov.querySelector("#eu-role").value;
-        if(!nome){toast("Informe o nome","");return;}
-        if(id===sessao.id){toast("Não pode alterar a própria conta","");return;}
-        const up=await sb.from("participantes").update({nome,cargo,role,atualizado_em:new Date().toISOString()}).eq("id",id);
-        if(up.error){toast("Não foi possível editar",up.error.message);return;}
-        closeModal();await carregarDadosSupabase();renderAll();await carregarUsuarios();toast("Usuário atualizado",nome);
-      };
-    });
-  }
-
-  $('#ac-cadastrar').onclick=async()=>{
-    const btn=$('#ac-cadastrar'),nome=$('#ac-nome').value.trim(),cargo=$('#ac-cargo').value.trim(),email=$('#ac-email').value.trim().toLowerCase(),role=$('#ac-role').value,status=$('#ac-status');
-    status.textContent="";
-    if(!nome){status.textContent="Digite o nome da pessoa.";return;}
-    if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)){status.textContent="Digite um e-mail válido.";return;}
-    if(!sessao||(sessao.role!=="adm_principal"&&sessao.role!=="adm")){status.textContent="Você não tem permissão para cadastrar usuários.";return;}
-    btn.disabled=true;btn.textContent="Cadastrando...";
-    try{
-      const ex=await sb.from("participantes").select("id").eq("email",email).maybeSingle();
-      if(ex.error)throw ex.error;if(ex.data)throw new Error("Este e-mail já está cadastrado como participante no GenMeet.");
-      const novo={id:uid(),nome,cargo,email,role,ativo:true};state.participants.push(novo);
-      try{await persistParticipant(novo);}catch(err){state.participants=state.participants.filter(x=>x.id!==novo.id);throw err;}
-      renderAll();status.textContent=nome+" foi cadastrado. Agora a pessoa pode usar Primeiro acesso com este e-mail.";$('#ac-nome').value="";$('#ac-cargo').value="";$('#ac-email').value="";await carregarUsuarios();
-    }catch(e){status.textContent="Não foi possível cadastrar: "+(e.message||"erro");}
-    finally{btn.disabled=false;btn.textContent="Cadastrar pessoa";}
-  };
-
-  if(!usuariosEventsBound){
-    usuariosEventsBound = true;
-    document.addEventListener("click",async e=>{
-      const ed=e.target.closest("[data-user-edit]"),tg=e.target.closest("[data-user-toggle]"),dl=e.target.closest("[data-user-del]");
-      if(ed){await editarUsuario(ed.dataset.userEdit);return;}
-      if(tg&&sessao?.role==="adm_principal"){
-        if(tg.dataset.busy === "1") return;
-        tg.dataset.busy = "1";
-        try{
-          const id=tg.dataset.userToggle;
-          const r=await sb.from("participantes").select("id,role,ativo,nome").eq("id",id).maybeSingle();
-          if(r.error||!r.data||r.data.role==="adm_principal")return;
-          const ativo=!r.data.ativo;
-          const u=await sb.from("participantes").update({ativo,atualizado_em:new Date().toISOString()}).eq("id",id);
-          if(u.error){toast("Não foi possível alterar o acesso",u.error.message);return;}
-          await carregarDadosSupabase();renderAll();await carregarUsuarios();toast(ativo?"Usuário ativado":"Usuário desativado",r.data.nome||"");
-        }finally{tg.dataset.busy = "0";}
-        return;
-      }
-      if(dl&&sessao?.role==="adm_principal"){
-        if(dl.dataset.busy === "1") return;
-        dl.dataset.busy = "1";
-        try{
-          const id=dl.dataset.userDel;
-          const r=await sb.from("participantes").select("id,role,nome").eq("id",id).maybeSingle();
-          if(r.error||!r.data||r.data.role==="adm_principal")return;
-          if(!await confirmar("Excluir o usuário "+(r.data.nome||"")+"? Esta ação remove o cadastro e o acesso ao GenMeet.","Excluir"))return;
-          const d=await sb.from("participantes").delete().eq("id",id);
-          if(d.error){toast("Não foi possível excluir",d.error.message);return;}
-          await carregarDadosSupabase();renderAll();await carregarUsuarios();toast("Usuário excluído","O cadastro foi removido.");
-        }finally{dl.dataset.busy = "0";}
-      }
-    });
-  }
-
-
-  carregarUsuarios();
-}
-
-
-/* ================= sincronização ================= */
-let ultimoSync = null, sincronizando = false;
-async function sincronizar(silencioso){
-  if(sincronizando) return false;
-  sincronizando=true;
-  try{
-    await carregarDadosSupabase();
-    ultimoSync=new Date().toTimeString().slice(0,5);
-    applyConfig(); renderAll();
-    if(!silencioso) toast('Sincronizado','Dados atualizados a partir do Supabase.');
-    return true;
-  }catch(e){
-    if(!silencioso) toast('Falha na sincronização',e.message||'Não foi possível atualizar os dados.');
-    return false;
-  }finally{ sincronizando=false; }
-}
-
-/* ================= diagnóstico ================= */
-window.addEventListener("error", e => {
-  try{ toast("Erro no sistema", (e.message || "falha desconhecida") + (e.lineno ? " (linha " + e.lineno + ")" : "")); }catch(_){}
-});
-window.addEventListener("unhandledrejection", e => {
-  try{ toast("Erro no sistema", (e.reason && e.reason.message) ? e.reason.message : String(e.reason)); }catch(_){}
-});
-
-/* ================= boot ================= */
-function renderAll(){
-  renderPickers(); renderChips(); fillQuem();
-  renderPainel(); renderList(); renderCal(); renderTeams(); renderPeople(); renderParts();
-}
-(async function boot(){
-  // Abre primeiro usando os dados locais. Supabase atualiza tudo depois, sem bloquear a tela.
-  await load();
-  applyConfig();
-  $("#f-data").min = iso(new Date());
-  sessao = null;
-  renderAll();
-
-  // Tudo que depende de rede fica realmente em segundo plano.
-  Promise.resolve().then(async()=>{
-    try{
-      if(sb){
-        await sincronizar(true);
-        await garantirCriadores();
-        renderAll();
-      }else{
-        setSupabaseStatus("err","Supabase indisponível");
-      }
-    }catch(e){ console.warn("GenMeet · sincronização inicial",e); setSupabaseStatus("err","Supabase offline"); }
-  });
-
-  setInterval(() => { sincronizar(true); }, 60000);
-  setInterval(checkReminders, 15000);
-  setInterval(() => { if($("#v-painel").classList.contains("on")) renderPainel(); }, 30000);
-  checkReminders();
-})();
-});
+};
 </script>
+
+
+<!-- APLICAÇÃO PRINCIPAL -->
+
+<script src="assets/js/app.js"></script>
+
 </body>
 </html>
+```
