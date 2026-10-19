@@ -1,0 +1,33 @@
+# Salve em: .github/workflows/supabase-keep-alive.yml
+# Faz uma consulta somente leitura no Supabase toda madrugada.
+# Não cria nem altera nada no banco.
+
+name: Supabase Keep Alive
+
+on:
+  schedule:
+    # 06:00 UTC = 03:00 em Brasília, todos os dias
+    - cron: "0 6 * * *"
+  workflow_dispatch: # permite rodar manualmente para testar
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Consulta leve no banco
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
+          SUPABASE_TABLE: ${{ secrets.SUPABASE_TABLE }}
+        run: |
+          STATUS=$(curl -s -o resposta.txt -w "%{http_code}" \
+            "$SUPABASE_URL/rest/v1/$SUPABASE_TABLE?select=*&limit=1" \
+            -H "apikey: $SUPABASE_KEY")
+
+          echo "HTTP $STATUS"
+          head -c 300 resposta.txt; echo
+
+          if [ "$STATUS" -ge 400 ]; then
+            echo "Falha no ping"
+            exit 1
+          fi
